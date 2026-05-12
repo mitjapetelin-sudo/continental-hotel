@@ -3,567 +3,319 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>The Continental — Hotel Management</title>
+<title>The Continental — Hotel Management Simulator</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <style>
   :root {
     --ink: #0a0908;
+    --ink-2: #14110f;
     --paper: #f4ead5;
     --paper-dim: #d8c9a3;
+    --paper-faint: rgba(244,234,213,0.5);
     --gold: #c9a961;
     --gold-bright: #e8c878;
     --gold-deep: #8a6f2f;
     --burgundy: #5c1a1b;
     --moss: #3a4a2c;
     --red-alert: #b03a2e;
+    --green-good: #6b8f4a;
   }
   * { box-sizing: border-box; margin: 0; padding: 0; }
   html, body {
-    background: var(--ink);
-    color: var(--paper);
-    font-family: 'Inter', sans-serif;
-    min-height: 100vh;
-    overflow-x: hidden;
+    background: var(--ink); color: var(--paper);
+    font-family: 'Inter', sans-serif; min-height: 100vh; overflow-x: hidden;
   }
   body {
     background-image:
       radial-gradient(ellipse at top, rgba(201,169,97,0.08) 0%, transparent 60%),
       radial-gradient(ellipse at bottom, rgba(92,26,27,0.12) 0%, transparent 60%),
       url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence baseFrequency='0.9' numOctaves='2'/%3E%3CfeColorMatrix values='0 0 0 0 0.79 0 0 0 0 0.66 0 0 0 0 0.38 0 0 0 0.04 0'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)'/%3E%3C/svg%3E");
-    padding: 32px 16px 64px;
+    padding: 24px 16px 64px;
   }
-
-  .frame {
-    max-width: 1100px;
-    margin: 0 auto;
-    display: grid;
-    grid-template-columns: 1fr;
-    gap: 24px;
-  }
-  @media (min-width: 900px) {
-    .frame { grid-template-columns: 1.3fr 1fr; align-items: start; }
+  .frame { max-width: 1200px; margin: 0 auto; display: grid; grid-template-columns: 1fr; gap: 20px; }
+  @media (min-width: 980px) {
+    .frame { grid-template-columns: 1.4fr 1fr; align-items: start; }
     .masthead { grid-column: 1 / -1; }
   }
-
   .masthead {
-    text-align: center;
-    padding: 24px 16px 8px;
-    border-top: 1px solid var(--gold-deep);
-    border-bottom: 1px solid var(--gold-deep);
+    text-align: center; padding: 20px 16px 12px;
+    border-top: 1px solid var(--gold-deep); border-bottom: 1px solid var(--gold-deep);
     position: relative;
   }
   .masthead::before, .masthead::after {
-    content: '';
-    position: absolute;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 60px;
-    height: 1px;
-    background: var(--gold);
+    content: ''; position: absolute; left: 50%; transform: translateX(-50%);
+    width: 60px; height: 1px; background: var(--gold);
   }
-  .masthead::before { top: 6px; }
-  .masthead::after { bottom: 6px; }
-  .est {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 10px;
-    letter-spacing: 0.4em;
-    color: var(--gold);
-    text-transform: uppercase;
-    margin-bottom: 8px;
-  }
-  .brand {
-    font-family: 'Cormorant Garamond', serif;
-    font-weight: 500;
-    font-size: clamp(40px, 6vw, 64px);
-    line-height: 0.95;
-    letter-spacing: 0.02em;
-    color: var(--paper);
-  }
-  .brand .the {
-    display: block;
-    font-style: italic;
-    font-size: 0.35em;
-    letter-spacing: 0.5em;
-    color: var(--gold);
-    margin-bottom: 4px;
-  }
-  .tagline {
-    font-family: 'Cormorant Garamond', serif;
-    font-style: italic;
-    font-size: 14px;
-    color: var(--paper-dim);
-    margin-top: 8px;
+  .masthead::before { top: 6px; } .masthead::after { bottom: 6px; }
+  .est { font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: 0.4em; color: var(--gold); text-transform: uppercase; margin-bottom: 6px; }
+  .brand { font-family: 'Cormorant Garamond', serif; font-weight: 500; font-size: clamp(36px, 5.5vw, 56px); line-height: 0.95; letter-spacing: 0.02em; color: var(--paper); }
+  .brand .the { display: block; font-style: italic; font-size: 0.32em; letter-spacing: 0.5em; color: var(--gold); margin-bottom: 4px; }
+  .tagline { font-family: 'Cormorant Garamond', serif; font-style: italic; font-size: 13px; color: var(--paper-dim); margin-top: 6px; }
+  .edu-badge { display: inline-block; margin-top: 10px; padding: 4px 10px; border: 1px solid var(--gold-deep); font-family: 'JetBrains Mono', monospace; font-size: 9px; letter-spacing: 0.3em; text-transform: uppercase; color: var(--gold); }
+
+  .panel { background: linear-gradient(180deg, rgba(244,234,213,0.04) 0%, rgba(244,234,213,0.01) 100%); border: 1px solid rgba(201,169,97,0.25); padding: 18px; position: relative; margin-bottom: 16px; }
+  .panel:last-child { margin-bottom: 0; }
+  .panel-title { font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: 0.3em; text-transform: uppercase; color: var(--gold); margin-bottom: 14px; display: flex; justify-content: space-between; align-items: center; }
+  .panel-title::after { content: ''; flex: 1; height: 1px; background: linear-gradient(90deg, var(--gold-deep), transparent); margin-left: 12px; }
+  .panel-subtitle { font-family: 'Cormorant Garamond', serif; font-style: italic; font-size: 13px; color: var(--paper-dim); margin-bottom: 12px; }
+
+  .kpi-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 12px; }
+  .kpi { border-left: 2px solid var(--gold-deep); padding: 4px 12px; position: relative; }
+  .kpi-label { font-family: 'JetBrains Mono', monospace; font-size: 9px; letter-spacing: 0.25em; text-transform: uppercase; color: var(--paper-dim); margin-bottom: 4px; cursor: help; display: inline-flex; align-items: center; gap: 4px; border-bottom: 1px dotted var(--paper-faint); }
+  .kpi-value { font-family: 'Cormorant Garamond', serif; font-size: 26px; font-weight: 500; color: var(--paper); line-height: 1; }
+  .kpi-value.money { color: var(--gold-bright); }
+  .kpi-value.good { color: var(--green-good); }
+  .kpi-value.warn { color: var(--red-alert); }
+  .kpi-sub { font-family: 'JetBrains Mono', monospace; font-size: 9px; color: var(--paper-dim); margin-top: 4px; letter-spacing: 0.05em; }
+
+  .kpi-label[data-tip] { position: relative; }
+  .kpi-label[data-tip]:hover::after {
+    content: attr(data-tip); position: absolute; bottom: calc(100% + 8px); left: 0;
+    background: var(--ink); border: 1px solid var(--gold); padding: 10px 14px;
+    width: 240px; z-index: 20; font-family: 'Inter', sans-serif; font-size: 11px;
+    letter-spacing: 0; text-transform: none; color: var(--paper); line-height: 1.5;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.6);
   }
 
-  .panel {
-    background: linear-gradient(180deg, rgba(244,234,213,0.04) 0%, rgba(244,234,213,0.01) 100%);
-    border: 1px solid rgba(201,169,97,0.25);
-    padding: 20px;
-    position: relative;
-  }
-  .panel-title {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 10px;
-    letter-spacing: 0.3em;
-    text-transform: uppercase;
-    color: var(--gold);
-    margin-bottom: 14px;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-  }
-  .panel-title::after {
-    content: '';
-    flex: 1;
-    height: 1px;
-    background: linear-gradient(90deg, var(--gold-deep), transparent);
-    margin-left: 12px;
-  }
+  .pricing-row { display: flex; align-items: center; justify-content: space-between; gap: 14px; margin-bottom: 6px; }
+  .pricing-label { font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--paper-dim); }
+  .pricing-value { font-family: 'Cormorant Garamond', serif; font-size: 28px; font-weight: 500; color: var(--gold-bright); }
+  .slider-wrap { margin: 14px 0 8px; position: relative; }
+  input[type=range] { -webkit-appearance: none; appearance: none; width: 100%; height: 4px; background: linear-gradient(90deg, var(--gold-deep), var(--gold), var(--burgundy)); outline: none; border-radius: 0; }
+  input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; appearance: none; width: 20px; height: 20px; background: var(--gold-bright); border: 2px solid var(--ink); cursor: pointer; box-shadow: 0 0 0 1px var(--gold); }
+  input[type=range]::-moz-range-thumb { width: 20px; height: 20px; background: var(--gold-bright); border: 2px solid var(--ink); cursor: pointer; box-shadow: 0 0 0 1px var(--gold); }
+  .slider-bounds { display: flex; justify-content: space-between; font-family: 'JetBrains Mono', monospace; font-size: 9px; color: var(--paper-dim); margin-top: 4px; letter-spacing: 0.15em; }
+  .demand-meter { margin-top: 12px; padding: 10px 12px; background: rgba(0,0,0,0.3); border: 1px dashed rgba(201,169,97,0.2); font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--paper-dim); letter-spacing: 0.1em; }
+  .demand-meter strong { color: var(--gold-bright); font-weight: 500; }
 
-  .ledger {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 14px 20px;
-  }
-  .stat {
-    border-left: 2px solid var(--gold-deep);
-    padding-left: 12px;
-  }
-  .stat-label {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 9px;
-    letter-spacing: 0.25em;
-    text-transform: uppercase;
-    color: var(--paper-dim);
-    margin-bottom: 4px;
-  }
-  .stat-value {
-    font-family: 'Cormorant Garamond', serif;
-    font-size: 28px;
-    font-weight: 500;
-    color: var(--paper);
-    line-height: 1;
-  }
-  .stat-value.money { color: var(--gold-bright); }
-  .stat-value.warn { color: var(--red-alert); }
-  .stat-sub {
-    font-size: 11px;
-    color: var(--paper-dim);
-    margin-top: 4px;
-  }
-
-  .rooms {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(70px, 1fr));
-    gap: 8px;
-    margin-top: 8px;
-  }
-  .room {
-    aspect-ratio: 1;
-    border: 1px solid var(--gold-deep);
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 10px;
-    color: var(--paper-dim);
-    position: relative;
-    transition: all 0.3s;
-    cursor: default;
-  }
-  .room .num { font-size: 14px; color: var(--gold); margin-bottom: 2px; }
-  .room.occupied {
-    background: linear-gradient(135deg, var(--burgundy) 0%, rgba(92,26,27,0.4) 100%);
-    border-color: var(--burgundy);
-    color: var(--paper);
-  }
+  .rooms { display: grid; grid-template-columns: repeat(auto-fill, minmax(48px, 1fr)); gap: 5px; margin-top: 4px; }
+  .room { aspect-ratio: 1; border: 1px solid var(--gold-deep); display: flex; flex-direction: column; align-items: center; justify-content: center; font-family: 'JetBrains Mono', monospace; font-size: 9px; color: var(--paper-dim); transition: all 0.3s; }
+  .room .num { font-size: 11px; color: var(--gold); margin-bottom: 1px; }
+  .room.occupied { background: linear-gradient(135deg, var(--burgundy) 0%, rgba(92,26,27,0.4) 100%); border-color: var(--burgundy); color: var(--paper); }
   .room.occupied .num { color: var(--gold-bright); }
-  .room.vip {
-    background: linear-gradient(135deg, var(--gold-deep) 0%, var(--gold) 100%);
-    border-color: var(--gold-bright);
-    color: var(--ink);
-  }
-  .room.vip .num { color: var(--ink); }
-  .room.suite { border-color: var(--gold-bright); border-width: 2px; }
-  .room.penthouse {
-    border-color: var(--gold-bright);
-    border-width: 2px;
-    box-shadow: inset 0 0 12px rgba(201,169,97,0.3);
-  }
 
-  .actions {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 10px;
-    margin-top: 16px;
-  }
-  .btn {
-    background: transparent;
-    border: 1px solid var(--gold-deep);
-    color: var(--paper);
-    padding: 14px 12px;
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 10px;
-    letter-spacing: 0.2em;
-    text-transform: uppercase;
-    cursor: pointer;
-    transition: all 0.2s;
-    position: relative;
-    overflow: hidden;
-  }
-  .btn:hover:not(:disabled) {
-    background: var(--gold);
-    color: var(--ink);
-    border-color: var(--gold);
-  }
-  .btn:disabled {
-    opacity: 0.35;
-    cursor: not-allowed;
-  }
-  .btn .cost {
-    display: block;
-    font-family: 'Cormorant Garamond', serif;
-    font-size: 16px;
-    font-style: italic;
-    letter-spacing: 0;
-    text-transform: none;
-    color: var(--gold-bright);
-    margin-top: 4px;
-  }
+  .actions { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 14px; }
+  .btn { background: transparent; border: 1px solid var(--gold-deep); color: var(--paper); padding: 14px 12px; font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: 0.2em; text-transform: uppercase; cursor: pointer; transition: all 0.2s; }
+  .btn:hover:not(:disabled) { background: var(--gold); color: var(--ink); border-color: var(--gold); }
+  .btn:disabled { opacity: 0.35; cursor: not-allowed; }
+  .btn .cost { display: block; font-family: 'Cormorant Garamond', serif; font-size: 15px; font-style: italic; letter-spacing: 0; text-transform: none; color: var(--gold-bright); margin-top: 4px; }
   .btn:hover:not(:disabled) .cost { color: var(--burgundy); }
-  .btn.primary {
-    background: var(--gold);
-    color: var(--ink);
-    border-color: var(--gold);
-  }
-  .btn.primary:hover:not(:disabled) {
-    background: var(--gold-bright);
-    border-color: var(--gold-bright);
-  }
+  .btn.primary { background: var(--gold); color: var(--ink); border-color: var(--gold); }
+  .btn.primary:hover:not(:disabled) { background: var(--gold-bright); border-color: var(--gold-bright); }
   .btn.primary .cost { color: var(--burgundy); }
-  .btn.danger:hover:not(:disabled) {
-    background: var(--burgundy);
-    border-color: var(--burgundy);
-    color: var(--paper);
-  }
+  .btn.danger:hover:not(:disabled) { background: var(--burgundy); border-color: var(--burgundy); color: var(--paper); }
   .btn.full-width { grid-column: 1 / -1; }
 
-  .log {
-    max-height: 180px;
-    overflow-y: auto;
-    border: 1px solid rgba(201,169,97,0.15);
-    background: rgba(0,0,0,0.3);
-    padding: 12px;
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 11px;
-    line-height: 1.6;
-  }
-  .log-entry {
-    color: var(--paper-dim);
-    padding: 2px 0;
-    border-bottom: 1px dashed rgba(201,169,97,0.08);
-  }
+  .cost-list { display: grid; gap: 6px; font-family: 'JetBrains Mono', monospace; font-size: 11px; }
+  .cost-row { display: grid; grid-template-columns: auto 1fr auto; gap: 10px; align-items: baseline; padding: 4px 0; border-bottom: 1px dotted rgba(201,169,97,0.1); }
+  .cost-row:last-of-type { border-bottom: none; }
+  .cost-row .lbl { color: var(--paper-dim); letter-spacing: 0.1em; }
+  .cost-row .pct { color: var(--paper-faint); font-size: 9px; font-style: italic; text-align: right; }
+  .cost-row .amt { color: var(--paper); font-weight: 500; }
+  .cost-row.total { border-top: 1px solid var(--gold-deep); border-bottom: none; margin-top: 6px; padding-top: 10px; }
+  .cost-row.total .lbl { color: var(--gold); }
+  .cost-row.total .amt { color: var(--gold-bright); font-size: 13px; }
+
+  .log { max-height: 220px; overflow-y: auto; border: 1px solid rgba(201,169,97,0.15); background: rgba(0,0,0,0.3); padding: 10px; font-family: 'JetBrains Mono', monospace; font-size: 11px; line-height: 1.5; }
+  .log-entry { color: var(--paper-dim); padding: 3px 0; border-bottom: 1px dashed rgba(201,169,97,0.08); }
   .log-entry:last-child { border-bottom: none; }
-  .log-entry .time {
-    color: var(--gold);
-    margin-right: 8px;
-  }
+  .log-entry .time { color: var(--gold); margin-right: 8px; }
   .log-entry.good { color: #a8c98a; }
   .log-entry.bad { color: #d68c7e; }
   .log-entry.vip { color: var(--gold-bright); font-weight: 500; }
+  .log-entry .edu { display: block; font-style: italic; color: var(--paper-faint); font-size: 10px; margin-top: 4px; padding-left: 14px; border-left: 1px solid var(--gold-deep); }
 
-  .leaderboard {
-    list-style: none;
-    display: flex;
-    flex-direction: column;
-    gap: 2px;
-  }
-  .lb-row {
-    display: grid;
-    grid-template-columns: 32px 1fr auto;
-    gap: 12px;
-    align-items: baseline;
-    padding: 10px 8px;
-    border-bottom: 1px dotted rgba(201,169,97,0.2);
-  }
+  .leaderboard { list-style: none; display: flex; flex-direction: column; gap: 2px; }
+  .lb-row { display: grid; grid-template-columns: 28px 1fr auto; gap: 10px; align-items: baseline; padding: 9px 6px; border-bottom: 1px dotted rgba(201,169,97,0.2); }
   .lb-row:last-child { border-bottom: none; }
-  .lb-rank {
-    font-family: 'Cormorant Garamond', serif;
-    font-size: 22px;
-    font-style: italic;
-    color: var(--gold);
-    text-align: center;
-  }
-  .lb-row:nth-child(1) .lb-rank { color: var(--gold-bright); font-size: 26px; }
+  .lb-rank { font-family: 'Cormorant Garamond', serif; font-size: 20px; font-style: italic; color: var(--gold); text-align: center; }
+  .lb-row:nth-child(1) .lb-rank { color: var(--gold-bright); font-size: 24px; }
   .lb-row.me { background: rgba(201,169,97,0.08); }
-  .lb-name {
-    font-family: 'Cormorant Garamond', serif;
-    font-size: 18px;
-    color: var(--paper);
-  }
-  .lb-meta {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 9px;
-    color: var(--paper-dim);
-    letter-spacing: 0.15em;
-    text-transform: uppercase;
-  }
-  .lb-score {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 14px;
-    color: var(--gold-bright);
-    font-weight: 500;
-  }
-  .lb-empty {
-    text-align: center;
-    padding: 24px;
-    color: var(--paper-dim);
-    font-style: italic;
-    font-family: 'Cormorant Garamond', serif;
-  }
+  .lb-name { font-family: 'Cormorant Garamond', serif; font-size: 16px; color: var(--paper); }
+  .lb-meta { font-family: 'JetBrains Mono', monospace; font-size: 9px; color: var(--paper-dim); letter-spacing: 0.1em; text-transform: uppercase; }
+  .lb-score { font-family: 'JetBrains Mono', monospace; font-size: 13px; color: var(--gold-bright); font-weight: 500; }
+  .lb-empty { text-align: center; padding: 20px; color: var(--paper-dim); font-style: italic; font-family: 'Cormorant Garamond', serif; }
 
-  .modal-bg {
-    position: fixed;
-    inset: 0;
-    background: rgba(10,9,8,0.92);
-    backdrop-filter: blur(8px);
-    display: none;
-    align-items: center;
-    justify-content: center;
-    z-index: 100;
-    padding: 20px;
-  }
+  .modal-bg { position: fixed; inset: 0; background: rgba(10,9,8,0.94); backdrop-filter: blur(8px); display: none; align-items: center; justify-content: center; z-index: 100; padding: 20px; overflow-y: auto; }
   .modal-bg.show { display: flex; }
-  .modal {
-    background: var(--ink);
-    border: 1px solid var(--gold);
-    padding: 40px 32px;
-    max-width: 460px;
-    width: 100%;
-    text-align: center;
-    position: relative;
-  }
-  .modal::before {
-    content: '';
-    position: absolute;
-    inset: 6px;
-    border: 1px solid var(--gold-deep);
-    pointer-events: none;
-  }
-  .modal h2 {
-    font-family: 'Cormorant Garamond', serif;
-    font-size: 32px;
-    font-weight: 500;
-    color: var(--gold-bright);
-    margin-bottom: 8px;
-  }
-  .modal .subtitle {
-    font-family: 'Cormorant Garamond', serif;
-    font-style: italic;
-    color: var(--paper-dim);
-    margin-bottom: 20px;
-  }
-  .modal .final-score {
-    font-family: 'Cormorant Garamond', serif;
-    font-size: 48px;
-    color: var(--gold-bright);
-    margin: 16px 0;
-  }
-  .modal .breakdown {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 11px;
-    color: var(--paper-dim);
-    margin-bottom: 20px;
-    line-height: 1.8;
-  }
-  .modal input {
-    width: 100%;
-    background: transparent;
-    border: none;
-    border-bottom: 1px solid var(--gold-deep);
-    color: var(--paper);
-    font-family: 'Cormorant Garamond', serif;
-    font-size: 20px;
-    text-align: center;
-    padding: 8px;
-    margin-bottom: 16px;
-    outline: none;
-    transition: border-color 0.2s;
-  }
+  .modal { background: var(--ink); border: 1px solid var(--gold); padding: 32px 28px; max-width: 540px; width: 100%; position: relative; margin: auto; }
+  .modal::before { content: ''; position: absolute; inset: 6px; border: 1px solid var(--gold-deep); pointer-events: none; }
+  .modal h2 { font-family: 'Cormorant Garamond', serif; font-size: 30px; font-weight: 500; color: var(--gold-bright); margin-bottom: 6px; text-align: center; }
+  .modal .subtitle { font-family: 'Cormorant Garamond', serif; font-style: italic; color: var(--paper-dim); margin-bottom: 20px; text-align: center; }
+
+  .pnl { font-family: 'JetBrains Mono', monospace; font-size: 11px; background: rgba(244,234,213,0.03); border: 1px solid var(--gold-deep); padding: 16px; margin-bottom: 16px; }
+  .pnl-head { font-family: 'Cormorant Garamond', serif; font-size: 14px; font-style: italic; color: var(--gold); text-align: center; margin-bottom: 12px; padding-bottom: 8px; border-bottom: 1px solid var(--gold-deep); }
+  .pnl-row { display: grid; grid-template-columns: 1fr auto; gap: 10px; padding: 3px 0; color: var(--paper-dim); }
+  .pnl-row .v { color: var(--paper); font-weight: 500; }
+  .pnl-row.indent { padding-left: 12px; font-size: 10px; color: var(--paper-faint); }
+  .pnl-row.indent .v { color: var(--paper-dim); }
+  .pnl-row.subtotal { border-top: 1px dotted rgba(201,169,97,0.3); margin-top: 6px; padding-top: 6px; }
+  .pnl-row.total { border-top: 1px solid var(--gold); margin-top: 8px; padding-top: 8px; font-weight: 600; }
+  .pnl-row.total .v { color: var(--gold-bright); }
+  .pnl-section { margin-top: 14px; padding-top: 8px; }
+  .pnl-section-title { font-family: 'Cormorant Garamond', serif; font-style: italic; color: var(--gold); font-size: 12px; margin-bottom: 6px; }
+  .pnl-kpis { display: grid; grid-template-columns: 1fr 1fr; gap: 4px 16px; }
+  .grade-box { text-align: center; margin: 16px 0; padding: 14px; background: rgba(201,169,97,0.08); border: 1px solid var(--gold); }
+  .grade-letter { font-family: 'Cormorant Garamond', serif; font-size: 56px; font-weight: 600; color: var(--gold-bright); line-height: 1; }
+  .grade-comment { font-family: 'Cormorant Garamond', serif; font-style: italic; color: var(--paper-dim); margin-top: 8px; font-size: 13px; }
+  .modal input { width: 100%; background: transparent; border: none; border-bottom: 1px solid var(--gold-deep); color: var(--paper); font-family: 'Cormorant Garamond', serif; font-size: 18px; text-align: center; padding: 8px; margin-bottom: 14px; outline: none; transition: border-color 0.2s; }
   .modal input:focus { border-color: var(--gold-bright); }
   .modal input::placeholder { color: rgba(244,234,213,0.3); font-style: italic; }
-  .modal-actions {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 10px;
-  }
+  .modal-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
 
-  .toast {
-    position: fixed;
-    bottom: 24px;
-    left: 50%;
-    transform: translateX(-50%) translateY(100px);
-    background: var(--ink);
-    border: 1px solid var(--gold);
-    padding: 12px 24px;
-    font-family: 'Cormorant Garamond', serif;
-    font-style: italic;
-    color: var(--gold-bright);
-    transition: transform 0.4s cubic-bezier(0.2, 0.9, 0.3, 1.2);
-    z-index: 50;
-    pointer-events: none;
-  }
+  .toast { position: fixed; bottom: 24px; left: 50%; transform: translateX(-50%) translateY(100px); background: var(--ink); border: 1px solid var(--gold); padding: 12px 24px; font-family: 'Cormorant Garamond', serif; font-style: italic; color: var(--gold-bright); transition: transform 0.4s cubic-bezier(0.2, 0.9, 0.3, 1.2); z-index: 50; pointer-events: none; max-width: 90vw; text-align: center; }
   .toast.show { transform: translateX(-50%) translateY(0); }
 
-  .day-badge {
-    display: inline-block;
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 9px;
-    letter-spacing: 0.3em;
-    color: var(--gold);
-    padding: 2px 8px;
-    border: 1px solid var(--gold-deep);
-    margin-left: 8px;
-    text-transform: uppercase;
-  }
-
-  .tier-row {
-    display: flex;
-    gap: 16px;
-    flex-wrap: wrap;
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 9px;
-    color: var(--paper-dim);
-    letter-spacing: 0.2em;
-    text-transform: uppercase;
-    margin-top: 10px;
-    padding-top: 10px;
-    border-top: 1px dashed rgba(201,169,97,0.15);
-  }
-  .tier-dot {
-    display: inline-block;
-    width: 8px;
-    height: 8px;
-    margin-right: 6px;
-    vertical-align: middle;
-  }
-  .dot-std { background: transparent; border: 1px solid var(--gold-deep); }
-  .dot-occ { background: var(--burgundy); }
-  .dot-vip { background: var(--gold-bright); }
+  .day-badge { display: inline-block; font-family: 'JetBrains Mono', monospace; font-size: 9px; letter-spacing: 0.3em; color: var(--gold); padding: 2px 8px; border: 1px solid var(--gold-deep); margin-left: 8px; text-transform: uppercase; }
 
   ::-webkit-scrollbar { width: 6px; }
   ::-webkit-scrollbar-track { background: transparent; }
   ::-webkit-scrollbar-thumb { background: var(--gold-deep); }
 
-  .refresh-link {
-    background: none;
-    border: none;
-    color: var(--gold);
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 9px;
-    letter-spacing: 0.2em;
-    text-transform: uppercase;
-    cursor: pointer;
-    padding: 2px 6px;
-  }
+  .refresh-link { background: none; border: none; color: var(--gold); font-family: 'JetBrains Mono', monospace; font-size: 9px; letter-spacing: 0.2em; text-transform: uppercase; cursor: pointer; padding: 2px 6px; }
   .refresh-link:hover { color: var(--gold-bright); }
+
+  .tier-banner { text-align: center; padding: 12px; margin-bottom: 12px; border: 1px solid var(--gold-deep); background: rgba(201,169,97,0.05); }
+  .tier-banner .tier-name { font-family: 'Cormorant Garamond', serif; font-size: 22px; font-style: italic; color: var(--gold-bright); }
+  .tier-banner .tier-detail { font-family: 'JetBrains Mono', monospace; font-size: 9px; letter-spacing: 0.2em; color: var(--paper-dim); text-transform: uppercase; margin-top: 4px; }
+
+  .reputation { text-align: center; margin: 8px 0; font-family: 'Cormorant Garamond', serif; font-size: 13px; font-style: italic; color: var(--paper-dim); }
+  .stars { color: var(--gold-bright); letter-spacing: 0.1em; font-style: normal; font-size: 14px; }
+
+  .help-hint { font-family: 'Cormorant Garamond', serif; font-style: italic; font-size: 12px; color: var(--paper-faint); text-align: center; margin-top: 8px; }
 </style>
 </head>
 <body>
 <div class="frame">
 
   <header class="masthead">
-    <div class="est">Established · MMXXVI</div>
+    <div class="est">Hospitality Management Simulator · MMXXVI</div>
     <h1 class="brand"><span class="the">The</span>Continental</h1>
-    <p class="tagline">— Discretion. Distinction. Decadence. —</p>
+    <p class="tagline">— Revenue Management · Cost Control · Reputation —</p>
+    <div class="edu-badge">FH Conference · VSGT Maribor</div>
   </header>
 
   <section>
-    <div class="panel" style="margin-bottom:20px;">
-      <div class="panel-title">
-        <span>Daily Ledger <span class="day-badge" id="dayBadge">Day 1</span></span>
-        <span id="reputation" style="font-family:'Cormorant Garamond',serif; font-style:italic; font-size:14px; color:var(--paper-dim); letter-spacing:0; text-transform:none;">Reputation: ★★★</span>
-      </div>
-      <div class="ledger">
-        <div class="stat">
-          <div class="stat-label">Coffers</div>
-          <div class="stat-value money" id="profit">$1,000</div>
-          <div class="stat-sub" id="profitDelta">— starting capital</div>
-        </div>
-        <div class="stat">
-          <div class="stat-label">Occupancy</div>
-          <div class="stat-value" id="occupancy">0/3</div>
-          <div class="stat-sub" id="occupancySub">3 rooms available</div>
-        </div>
-        <div class="stat">
-          <div class="stat-label">Daily Costs</div>
-          <div class="stat-value warn" id="dailyCost">$50</div>
-          <div class="stat-sub">staff · upkeep · utilities</div>
-        </div>
-        <div class="stat">
-          <div class="stat-label">Hotel Tier</div>
-          <div class="stat-value" id="tierName" style="font-family:'Cormorant Garamond',serif; font-style:italic;">Boutique</div>
-          <div class="stat-sub" id="tierSub">$100/guest · 3 rooms</div>
-        </div>
-      </div>
-    </div>
 
-    <div class="panel" style="margin-bottom:20px;">
-      <div class="panel-title">Floor Plan</div>
-      <div class="rooms" id="roomsGrid"></div>
-      <div class="tier-row">
-        <span><span class="tier-dot dot-std"></span>Vacant</span>
-        <span><span class="tier-dot dot-occ"></span>Occupied</span>
-        <span><span class="tier-dot dot-vip"></span>VIP Guest</span>
+    <div class="panel">
+      <div class="panel-title">
+        <span>Live KPIs <span class="day-badge" id="dayBadge">Day 1</span></span>
+        <span class="reputation" style="margin:0; font-size:11px;">
+          <span>Reputation</span>
+          <span class="stars" id="reputationStars">★★★☆☆</span>
+        </span>
+      </div>
+      <div class="panel-subtitle">The metrics every general manager watches. Hover any label for definition.</div>
+      <div class="kpi-grid">
+        <div class="kpi">
+          <div class="kpi-label" data-tip="Cash on hand. Operating capital available to pay costs and invest in upgrades.">Cash</div>
+          <div class="kpi-value money" id="kpiCash">€10,000</div>
+          <div class="kpi-sub" id="kpiCashDelta">starting capital</div>
+        </div>
+        <div class="kpi">
+          <div class="kpi-label" data-tip="Occupancy Rate = rooms sold ÷ rooms available. Industry healthy benchmark is 65–80%.">Occupancy</div>
+          <div class="kpi-value" id="kpiOcc">—</div>
+          <div class="kpi-sub" id="kpiOccDetail">awaiting first day</div>
+        </div>
+        <div class="kpi">
+          <div class="kpi-label" data-tip="ADR (Average Daily Rate) = room revenue ÷ rooms sold. Your achieved average price per occupied room.">ADR</div>
+          <div class="kpi-value" id="kpiAdr">—</div>
+          <div class="kpi-sub" id="kpiAdrDetail">no rooms sold yet</div>
+        </div>
+        <div class="kpi">
+          <div class="kpi-label" data-tip="RevPAR (Revenue Per Available Room) = room revenue ÷ total rooms. Combines pricing and occupancy. Hospitality's most important metric.">RevPAR</div>
+          <div class="kpi-value" id="kpiRevpar">—</div>
+          <div class="kpi-sub" id="kpiRevparDetail">no data yet</div>
+        </div>
+        <div class="kpi">
+          <div class="kpi-label" data-tip="GOP Margin (Gross Operating Profit ÷ Revenue). Share of revenue kept after operating costs. Industry target: 30–40%.">GOP Margin</div>
+          <div class="kpi-value" id="kpiGop">—</div>
+          <div class="kpi-sub" id="kpiGopDetail">no operations yet</div>
+        </div>
+        <div class="kpi">
+          <div class="kpi-label" data-tip="Total revenue earned across all days you have operated.">Total Revenue</div>
+          <div class="kpi-value" id="kpiRev">€0</div>
+          <div class="kpi-sub" id="kpiRevDetail">lifetime</div>
+        </div>
       </div>
     </div>
 
     <div class="panel">
-      <div class="panel-title">Management</div>
-      <div class="actions">
-        <button class="btn primary" id="btnCheckIn">
-          Check In Guest
-          <span class="cost" id="checkInRate">+$100</span>
-        </button>
-        <button class="btn" id="btnCheckOut">
-          End Day / Check Out
-          <span class="cost">collect & reset</span>
-        </button>
-        <button class="btn" id="btnUpgrade">
-          Upgrade Hotel
-          <span class="cost" id="upgradeCost">$800</span>
-        </button>
-        <button class="btn" id="btnAdvertise">
-          Run Advertising
-          <span class="cost">$200 · attract VIP</span>
-        </button>
-        <button class="btn danger full-width" id="btnRetire">Retire & Submit Score</button>
+      <div class="panel-title"><span>Tier · Capacity</span></div>
+      <div class="tier-banner">
+        <div class="tier-name" id="tierName">Boutique</div>
+        <div class="tier-detail" id="tierDetail">8 rooms · ADR range €60–€140</div>
+      </div>
+      <div class="rooms" id="roomsGrid"></div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-title"><span>Today's Pricing Decision</span></div>
+      <div class="panel-subtitle">Set your room rate for the day. Higher prices reduce occupancy. Find the sweet spot.</div>
+      <div class="pricing-row">
+        <span class="pricing-label">Today's ADR</span>
+        <span class="pricing-value" id="priceValue">€100</span>
+      </div>
+      <div class="slider-wrap">
+        <input type="range" id="priceSlider" min="60" max="140" step="5" value="100" />
+        <div class="slider-bounds">
+          <span id="priceMin">€60 (full house)</span>
+          <span id="priceMax">€140 (premium)</span>
+        </div>
+      </div>
+      <div class="demand-meter">
+        At this price, expect roughly <strong id="demandForecast">5</strong> of <strong id="demandCap">8</strong> rooms sold today.
       </div>
     </div>
 
-    <div class="panel" style="margin-top:20px;">
-      <div class="panel-title">Concierge Log</div>
+    <div class="panel">
+      <div class="panel-title"><span>Management Actions</span></div>
+      <div class="actions">
+        <button class="btn primary full-width" id="btnRunDay">
+          Open for Business
+          <span class="cost">simulate today at chosen ADR</span>
+        </button>
+        <button class="btn" id="btnUpgrade">
+          Renovate · Upgrade Tier
+          <span class="cost" id="upgradeCost">€8,000</span>
+        </button>
+        <button class="btn" id="btnAdvertise">
+          Marketing Campaign
+          <span class="cost">€1,200 · 2-day boost</span>
+        </button>
+        <button class="btn danger full-width" id="btnRetire">Retire & View Report Card</button>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-title"><span>Today's Cost Breakdown (Estimated)</span></div>
+      <div class="panel-subtitle">Where your money goes. Labor and utilities are largely fixed; F&B and cleaning scale with occupancy.</div>
+      <div class="cost-list" id="costList"></div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-title"><span>Operations Log</span></div>
       <div class="log" id="logBox"></div>
+      <div class="help-hint">Hospitality lessons appear in italic below each event.</div>
     </div>
   </section>
 
   <aside>
-    <div class="panel" style="position:sticky; top:20px;">
+    <div class="panel" style="position:sticky; top:16px;">
       <div class="panel-title">
         <span>Hall of Proprietors</span>
         <button class="refresh-link" id="btnRefresh">↻ Refresh</button>
       </div>
-      <p style="font-family:'Cormorant Garamond',serif; font-style:italic; font-size:13px; color:var(--paper-dim); margin-bottom:14px; text-align:center;">
-        The finest hoteliers from across the realm
+      <p style="font-family:'Cormorant Garamond',serif; font-style:italic; font-size:12px; color:var(--paper-dim); margin-bottom:14px; text-align:center;">
+        Ranked by Gross Operating Profit (GOP).
       </p>
       <ol class="leaderboard" id="leaderboard">
         <li class="lb-empty">Loading the registry…</li>
       </ol>
-      <p style="font-family:'JetBrains Mono',monospace; font-size:9px; color:var(--paper-dim); letter-spacing:0.2em; text-transform:uppercase; text-align:center; margin-top:14px; padding-top:12px; border-top:1px dashed rgba(201,169,97,0.15);">
-        Live · shared with all guests
+      <p style="font-family:'JetBrains Mono',monospace; font-size:8px; color:var(--paper-dim); letter-spacing:0.2em; text-transform:uppercase; text-align:center; margin-top:14px; padding-top:12px; border-top:1px dashed rgba(201,169,97,0.15);">
+        Global · live updates
       </p>
     </div>
   </aside>
@@ -572,10 +324,49 @@
 
 <div class="modal-bg" id="endModal">
   <div class="modal">
-    <h2 id="endTitle">A Most Distinguished Tenure</h2>
-    <p class="subtitle" id="endSubtitle">Your time at The Continental concludes.</p>
-    <div class="final-score" id="finalScore">$0</div>
-    <div class="breakdown" id="endBreakdown"></div>
+    <h2 id="endTitle">Operating Report Card</h2>
+    <p class="subtitle" id="endSubtitle">Your final P&L statement.</p>
+
+    <div class="pnl">
+      <div class="pnl-head">THE CONTINENTAL — FINAL OPERATING REPORT</div>
+
+      <div class="pnl-row"><span>Period of operation</span><span class="v" id="rcDays">— days</span></div>
+      <div class="pnl-row"><span>Final tier</span><span class="v" id="rcTier">—</span></div>
+
+      <div class="pnl-section">
+        <div class="pnl-section-title">Revenue</div>
+        <div class="pnl-row indent"><span>Rooms revenue (net of commissions)</span><span class="v" id="rcRevRooms">€0</span></div>
+        <div class="pnl-row indent"><span>F&B / ancillary</span><span class="v" id="rcRevFB">€0</span></div>
+        <div class="pnl-row subtotal"><span>Total revenue</span><span class="v" id="rcRevTotal">€0</span></div>
+      </div>
+
+      <div class="pnl-section">
+        <div class="pnl-section-title">Operating Costs</div>
+        <div class="pnl-row indent"><span>Labor</span><span class="v" id="rcCostLabor">€0</span></div>
+        <div class="pnl-row indent"><span>Utilities, maintenance, supplies</span><span class="v" id="rcCostUtil">€0</span></div>
+        <div class="pnl-row indent"><span>F&B costs</span><span class="v" id="rcCostFB">€0</span></div>
+        <div class="pnl-row indent"><span>Marketing, commissions, other</span><span class="v" id="rcCostOther">€0</span></div>
+        <div class="pnl-row subtotal"><span>Total operating costs</span><span class="v" id="rcCostTotal">€0</span></div>
+      </div>
+
+      <div class="pnl-row total"><span>Gross Operating Profit (GOP)</span><span class="v" id="rcGop">€0</span></div>
+
+      <div class="pnl-section">
+        <div class="pnl-section-title">Performance Metrics</div>
+        <div class="pnl-kpis">
+          <div class="pnl-row"><span>Avg Occupancy</span><span class="v" id="rcOcc">—</span></div>
+          <div class="pnl-row"><span>ADR</span><span class="v" id="rcAdr">—</span></div>
+          <div class="pnl-row"><span>RevPAR</span><span class="v" id="rcRevpar">—</span></div>
+          <div class="pnl-row"><span>GOP Margin</span><span class="v" id="rcGopMargin">—</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="grade-box">
+      <div class="grade-letter" id="rcGrade">B+</div>
+      <div class="grade-comment" id="rcComment">A solid performance.</div>
+    </div>
+
     <input id="playerName" type="text" maxlength="24" placeholder="Sign the guestbook…" autocomplete="off" />
     <div class="modal-actions">
       <button class="btn primary" id="btnSubmit">Submit to Registry</button>
@@ -587,7 +378,6 @@
 <div class="toast" id="toast"></div>
 
 <script>
-  // ============ SUPABASE CONFIG ============
   const SUPABASE_URL = 'https://gjlhyrrjwhicgawocdfz.supabase.co';
   const SUPABASE_KEY = 'sb_publishable_xHGbpIyaS31ph7lPqvLL_Q_X9JmYcA7';
   const SUPABASE_HEADERS = {
@@ -596,78 +386,277 @@
     'Content-Type': 'application/json',
   };
 
-  // ============ GAME STATE ============
   const TIERS = [
-    { name: 'Boutique',      rate: 100, rooms: 3,  upgradeCost: 800,   dailyCost: 50,   vipChance: 0.10 },
-    { name: 'Refined',       rate: 175, rooms: 5,  upgradeCost: 2000,  dailyCost: 150,  vipChance: 0.18 },
-    { name: 'Distinguished', rate: 300, rooms: 7,  upgradeCost: 5000,  dailyCost: 350,  vipChance: 0.25 },
-    { name: 'Grand',         rate: 500, rooms: 9,  upgradeCost: 12000, dailyCost: 750,  vipChance: 0.35 },
-    { name: 'Legendary',     rate: 850, rooms: 12, upgradeCost: null,  dailyCost: 1500, vipChance: 0.45 }
+    { name: 'Boutique',      rooms: 8,  adrMin: 60,  adrMax: 140,  adrRef: 95,  dailyFixed: 180,  variablePerGuest: 15,  upgradeCost: 8000  },
+    { name: 'Refined',       rooms: 14, adrMin: 100, adrMax: 220,  adrRef: 155, dailyFixed: 420,  variablePerGuest: 25,  upgradeCost: 22000 },
+    { name: 'Distinguished', rooms: 22, adrMin: 180, adrMax: 360,  adrRef: 260, dailyFixed: 950,  variablePerGuest: 45,  upgradeCost: 55000 },
+    { name: 'Grand',         rooms: 36, adrMin: 320, adrMax: 600,  adrRef: 450, dailyFixed: 2100, variablePerGuest: 80,  upgradeCost: 140000 },
+    { name: 'Legendary',     rooms: 50, adrMin: 500, adrMax: 1000, adrRef: 720, dailyFixed: 4800, variablePerGuest: 140, upgradeCost: null },
   ];
 
   const EVENTS = [
-    { msg: 'A celebrity guest writes a glowing review.',  delta: 400, type: 'good', weight: 3 },
-    { msg: 'Plumbing emergency on the upper floor.',       delta: -300, type: 'bad', weight: 2 },
-    { msg: 'A diplomat reserves the entire suite block.',  delta: 600, type: 'good', weight: 2 },
-    { msg: 'Health inspector visits — passed with grace.', delta: 0, type: 'good', weight: 1 },
-    { msg: 'Staff requested overdue raises.',              delta: -250, type: 'bad', weight: 2 },
-    { msg: 'Vintage wine cellar discovered.',              delta: 500, type: 'good', weight: 1 },
-    { msg: 'Power outage. Refunds issued.',                delta: -400, type: 'bad', weight: 1 },
-    { msg: 'Featured in a travel publication.',            delta: 350, type: 'good', weight: 2 },
+    { msg: 'Trade fair in Maribor — business travelers flood the market.',
+      effect: { demand: 0.4, days: 2 }, type: 'good',
+      edu: 'Event-driven demand: hotels near convention centers see predictable spikes. Anticipating them is core to revenue management.', weight: 3 },
+    { msg: 'A celebrated chef opens at your hotel restaurant.',
+      effect: { reputation: 1, fbBonus: 0.15, days: 5 }, type: 'good',
+      edu: 'F&B is a reputation lever, not just revenue. Strong F&B can lift overall ADR.', weight: 2 },
+    { msg: 'Plumbing failure on the upper floors — emergency repair.',
+      effect: { cash: -2200 }, type: 'bad',
+      edu: 'Deferred maintenance becomes expensive maintenance. CapEx discipline matters.', weight: 2 },
+    { msg: 'OTA (Booking.com) raised commission rates.',
+      effect: { commissionUp: 0.03, days: 999 }, type: 'bad',
+      edu: 'OTAs reach guests you can\'t, but each booking costs 15–25% commission. Direct bookings are gold.', weight: 1 },
+    { msg: 'Local wine festival fills the city.',
+      effect: { demand: 0.5, days: 3 }, type: 'good',
+      edu: 'Leisure demand is event-driven and seasonal. Tourism board partnerships pay off.', weight: 2 },
+    { msg: 'Staff turnover — service quality slipped.',
+      effect: { reputation: -1, cash: -800 }, type: 'bad',
+      edu: 'Hospitality has the highest staff turnover of any major industry. Retention is cheaper than recruiting.', weight: 2 },
+    { msg: 'Featured in an international travel publication.',
+      effect: { reputation: 1, demand: 0.2, days: 4 }, type: 'good',
+      edu: 'Earned media (PR) drives bookings at zero marginal cost — a major edge over paid advertising.', weight: 2 },
+    { msg: 'Power outage — guests offered refunds.',
+      effect: { cash: -1500, reputation: -1 }, type: 'bad',
+      edu: 'Service recovery is a discipline: a refund plus sincere apology often retains a guest who would otherwise leave a 1-star review.', weight: 1 },
+    { msg: 'Sustainability certification awarded.',
+      effect: { reputation: 1 }, type: 'good',
+      edu: 'ESG and green certifications increasingly drive guest choice, especially among corporate accounts.', weight: 1 },
+    { msg: 'Conference booking — VSGT hosts hospitality leaders.',
+      effect: { demand: 0.6, days: 2, fbBonus: 0.2 }, type: 'good',
+      edu: 'MICE (Meetings, Incentives, Conferences, Events) is high-yield: rooms + F&B + meeting space combined.', weight: 2 },
   ];
 
   let state = {
-    profit: 1000, tier: 0, occupied: [], vipRooms: [],
-    day: 1, totalGuests: 0, vipServed: 0, daysPlayed: 1,
-    reputation: 3, adActive: false, gameOver: false,
+    cash: 10000, tier: 0, day: 1, gameOver: false, reputation: 3,
+    activeBoosts: [], commissionRate: 0.12,
+    daysOperated: 0,
+    totalRoomsRevenue: 0, totalFBRevenue: 0,
+    totalLaborCost: 0, totalUtilCost: 0, totalFBCost: 0, totalOtherCost: 0,
+    totalRoomsSold: 0, totalRoomNights: 0,
   };
+
+  let lastDayResult = null;
 
   const $ = id => document.getElementById(id);
   const els = {
-    profit: $('profit'), profitDelta: $('profitDelta'),
-    occupancy: $('occupancy'), occupancySub: $('occupancySub'),
-    dailyCost: $('dailyCost'),
-    tierName: $('tierName'), tierSub: $('tierSub'),
+    kpiCash: $('kpiCash'), kpiCashDelta: $('kpiCashDelta'),
+    kpiOcc: $('kpiOcc'), kpiOccDetail: $('kpiOccDetail'),
+    kpiAdr: $('kpiAdr'), kpiAdrDetail: $('kpiAdrDetail'),
+    kpiRevpar: $('kpiRevpar'), kpiRevparDetail: $('kpiRevparDetail'),
+    kpiGop: $('kpiGop'), kpiGopDetail: $('kpiGopDetail'),
+    kpiRev: $('kpiRev'), kpiRevDetail: $('kpiRevDetail'),
+    tierName: $('tierName'), tierDetail: $('tierDetail'),
     roomsGrid: $('roomsGrid'),
-    checkInRate: $('checkInRate'),
-    upgradeCost: $('upgradeCost'),
-    btnCheckIn: $('btnCheckIn'),
-    btnCheckOut: $('btnCheckOut'),
-    btnUpgrade: $('btnUpgrade'),
+    priceSlider: $('priceSlider'), priceValue: $('priceValue'),
+    priceMin: $('priceMin'), priceMax: $('priceMax'),
+    demandForecast: $('demandForecast'), demandCap: $('demandCap'),
+    btnRunDay: $('btnRunDay'),
+    btnUpgrade: $('btnUpgrade'), upgradeCost: $('upgradeCost'),
     btnAdvertise: $('btnAdvertise'),
     btnRetire: $('btnRetire'),
+    costList: $('costList'),
     logBox: $('logBox'),
     leaderboard: $('leaderboard'),
     dayBadge: $('dayBadge'),
-    reputation: $('reputation'),
+    reputationStars: $('reputationStars'),
     endModal: $('endModal'),
-    endTitle: $('endTitle'),
-    endSubtitle: $('endSubtitle'),
-    finalScore: $('finalScore'),
-    endBreakdown: $('endBreakdown'),
+    rcDays: $('rcDays'), rcTier: $('rcTier'),
+    rcRevRooms: $('rcRevRooms'), rcRevFB: $('rcRevFB'), rcRevTotal: $('rcRevTotal'),
+    rcCostLabor: $('rcCostLabor'), rcCostUtil: $('rcCostUtil'),
+    rcCostFB: $('rcCostFB'), rcCostOther: $('rcCostOther'), rcCostTotal: $('rcCostTotal'),
+    rcGop: $('rcGop'), rcOcc: $('rcOcc'), rcAdr: $('rcAdr'),
+    rcRevpar: $('rcRevpar'), rcGopMargin: $('rcGopMargin'),
+    rcGrade: $('rcGrade'), rcComment: $('rcComment'),
     playerName: $('playerName'),
-    btnSubmit: $('btnSubmit'),
-    btnRestart: $('btnRestart'),
+    btnSubmit: $('btnSubmit'), btnRestart: $('btnRestart'),
     btnRefresh: $('btnRefresh'),
     toast: $('toast'),
   };
 
-  const fmt = n => '$' + n.toLocaleString('en-US');
   const tier = () => TIERS[state.tier];
+  const eur = n => '€' + Math.round(n).toLocaleString('en-US');
+  const pct = (n, digits=0) => (n*100).toFixed(digits) + '%';
 
   function toast(msg) {
     els.toast.textContent = msg;
     els.toast.classList.add('show');
     clearTimeout(toast._t);
-    toast._t = setTimeout(() => els.toast.classList.remove('show'), 2200);
+    toast._t = setTimeout(() => els.toast.classList.remove('show'), 2400);
   }
 
-  function log(msg, kind = '') {
-    const li = document.createElement('div');
-    li.className = 'log-entry ' + kind;
-    li.innerHTML = `<span class="time">Day ${state.day}</span>${msg}`;
-    els.logBox.prepend(li);
-    while (els.logBox.children.length > 40) els.logBox.removeChild(els.logBox.lastChild);
+  function log(msg, kind = '', eduNote = null) {
+    const div = document.createElement('div');
+    div.className = 'log-entry ' + kind;
+    let html = `<span class="time">Day ${state.day}</span>${msg}`;
+    if (eduNote) html += `<span class="edu">💡 ${eduNote}</span>`;
+    div.innerHTML = html;
+    els.logBox.prepend(div);
+    while (els.logBox.children.length > 30) els.logBox.removeChild(els.logBox.lastChild);
+  }
+
+  function expectedOccupancyFraction(adr) {
+    const t = tier();
+    const span = t.adrMax - t.adrMin;
+    const offset = (adr - t.adrRef) / span;
+    let demand = 0.65 - offset * 0.85;
+    const repMult = 0.7 + (state.reputation - 1) * 0.15;
+    demand *= repMult;
+    let boost = 0;
+    state.activeBoosts.forEach(b => { if (b.demand) boost += b.demand; });
+    demand += boost;
+    return Math.max(0.05, Math.min(0.98, demand));
+  }
+
+  function fbRevenueFactor() {
+    let factor = 0.18;
+    state.activeBoosts.forEach(b => { if (b.fbBonus) factor += b.fbBonus; });
+    return factor;
+  }
+
+  function costBreakdown(roomsSold, fbRevenue, marketingSpend = 0) {
+    const t = tier();
+    const labor = t.dailyFixed * 0.65;
+    const utilities = t.dailyFixed * 0.35 + roomsSold * 2;
+    const fbCost = fbRevenue * 0.35;
+    const variable = roomsSold * t.variablePerGuest;
+    const other = marketingSpend;
+    const total = labor + utilities + fbCost + variable + other;
+    return { labor, utilities, fbCost, variable, other, total };
+  }
+
+  function render() {
+    const t = tier();
+    els.tierName.textContent = t.name;
+    els.tierDetail.textContent = `${t.rooms} rooms · ADR range ${eur(t.adrMin)}–${eur(t.adrMax)}`;
+
+    els.priceSlider.min = t.adrMin;
+    els.priceSlider.max = t.adrMax;
+    els.priceSlider.step = 5;
+    let currentPrice = parseInt(els.priceSlider.value);
+    if (currentPrice < t.adrMin || currentPrice > t.adrMax) {
+      currentPrice = t.adrRef;
+      els.priceSlider.value = currentPrice;
+    }
+    els.priceValue.textContent = eur(currentPrice);
+    els.priceMin.textContent = `${eur(t.adrMin)} (full house)`;
+    els.priceMax.textContent = `${eur(t.adrMax)} (premium)`;
+
+    const expectedFrac = expectedOccupancyFraction(currentPrice);
+    const expectedRooms = Math.round(expectedFrac * t.rooms);
+    els.demandForecast.textContent = expectedRooms;
+    els.demandCap.textContent = t.rooms;
+
+    els.kpiCash.textContent = eur(state.cash);
+    els.kpiCash.classList.toggle('warn', state.cash < 0);
+
+    const totalRev = state.totalRoomsRevenue + state.totalFBRevenue;
+    els.kpiRev.textContent = eur(totalRev);
+    els.kpiRevDetail.textContent = `${state.daysOperated} day${state.daysOperated===1?'':'s'} operated`;
+
+    if (state.daysOperated > 0 && state.totalRoomNights > 0) {
+      const occ = state.totalRoomsSold / state.totalRoomNights;
+      const adr = state.totalRoomsSold > 0 ? state.totalRoomsRevenue / state.totalRoomsSold : 0;
+      const revpar = state.totalRoomsRevenue / state.totalRoomNights;
+      const totalCosts = state.totalLaborCost + state.totalUtilCost + state.totalFBCost + state.totalOtherCost;
+      const gop = totalRev - totalCosts;
+      const gopMargin = totalRev > 0 ? gop / totalRev : 0;
+      els.kpiOcc.textContent = pct(occ, 1);
+      els.kpiOcc.classList.toggle('good', occ >= 0.65);
+      els.kpiOcc.classList.toggle('warn', occ < 0.45);
+      els.kpiOccDetail.textContent = occ >= 0.65 ? 'healthy' : occ >= 0.45 ? 'below benchmark' : 'underperforming';
+      els.kpiAdr.textContent = eur(adr);
+      els.kpiAdrDetail.textContent = `vs tier ref ${eur(t.adrRef)}`;
+      els.kpiRevpar.textContent = eur(revpar);
+      els.kpiRevparDetail.textContent = 'rev ÷ room nights';
+      els.kpiGop.textContent = pct(gopMargin, 1);
+      els.kpiGop.classList.toggle('good', gopMargin >= 0.30);
+      els.kpiGop.classList.toggle('warn', gopMargin < 0.15);
+      els.kpiGopDetail.textContent = gopMargin >= 0.30 ? 'industry target met' : 'below target';
+    }
+
+    els.dayBadge.textContent = `Day ${state.day}`;
+    els.reputationStars.textContent = '★'.repeat(state.reputation) + '☆'.repeat(5 - state.reputation);
+
+    const estRooms = expectedRooms;
+    const estRoomsRev = estRooms * currentPrice;
+    const estFB = estRoomsRev * fbRevenueFactor();
+    const cb = costBreakdown(estRooms, estFB, 0);
+    const estRev = estRoomsRev + estFB;
+    els.costList.innerHTML = `
+      <div class="cost-row"><span class="lbl">Labor</span><span class="pct">${estRev>0?Math.round(cb.labor/estRev*100):0}% of est. rev</span><span class="amt">${eur(cb.labor)}</span></div>
+      <div class="cost-row"><span class="lbl">Utilities & maintenance</span><span class="pct">fixed + variable</span><span class="amt">${eur(cb.utilities)}</span></div>
+      <div class="cost-row"><span class="lbl">F&B costs</span><span class="pct">~35% of F&B rev</span><span class="amt">${eur(cb.fbCost)}</span></div>
+      <div class="cost-row"><span class="lbl">Cleaning & supplies</span><span class="pct">${eur(t.variablePerGuest)}/room sold</span><span class="amt">${eur(cb.variable)}</span></div>
+      <div class="cost-row total"><span class="lbl">Total est. daily cost</span><span class="pct"></span><span class="amt">${eur(cb.total)}</span></div>
+    `;
+
+    els.roomsGrid.innerHTML = '';
+    const occupiedCount = (lastDayResult && lastDayResult.roomsSold) ? lastDayResult.roomsSold : 0;
+    for (let i = 0; i < t.rooms; i++) {
+      const r = document.createElement('div');
+      r.className = 'room' + (i < occupiedCount ? ' occupied' : '');
+      r.innerHTML = `<div class="num">${String(101 + i + state.tier * 100)}</div><div>${i < occupiedCount ? 'SOLD' : ''}</div>`;
+      els.roomsGrid.appendChild(r);
+    }
+
+    els.btnRunDay.disabled = state.gameOver;
+    els.btnUpgrade.disabled = state.gameOver || t.upgradeCost === null || state.cash < t.upgradeCost;
+    els.upgradeCost.textContent = t.upgradeCost === null ? 'Max tier reached' : eur(t.upgradeCost);
+    els.btnAdvertise.disabled = state.gameOver || state.cash < 1200;
+    els.btnRetire.disabled = state.gameOver;
+  }
+
+  function runDay() {
+    if (state.gameOver) return;
+    const t = tier();
+    const adr = parseInt(els.priceSlider.value);
+
+    state.activeBoosts = state.activeBoosts.map(b => ({...b, days: b.days - 1})).filter(b => b.days > 0);
+
+    const occFrac = expectedOccupancyFraction(adr);
+    const noise = (Math.random() - 0.5) * 0.08;
+    const actualFrac = Math.max(0.02, Math.min(1.0, occFrac + noise));
+    const roomsSold = Math.round(actualFrac * t.rooms);
+    const roomsRev = roomsSold * adr;
+    const commission = roomsRev * state.commissionRate;
+    const netRoomsRev = roomsRev - commission;
+    const fbRev = roomsRev * fbRevenueFactor();
+    const totalRev = netRoomsRev + fbRev;
+
+    const cb = costBreakdown(roomsSold, fbRev, 0);
+    const dayGOP = totalRev - cb.total;
+
+    state.cash += dayGOP;
+    state.daysOperated++;
+    state.totalRoomNights += t.rooms;
+    state.totalRoomsSold += roomsSold;
+    state.totalRoomsRevenue += netRoomsRev;
+    state.totalFBRevenue += fbRev;
+    state.totalLaborCost += cb.labor;
+    state.totalUtilCost += cb.utilities + cb.variable;
+    state.totalFBCost += cb.fbCost;
+    state.totalOtherCost += cb.other + commission;
+    lastDayResult = { roomsSold, adr, gop: dayGOP };
+
+    const occPctStr = pct(actualFrac, 0);
+    log(`Operated at ADR ${eur(adr)} — ${roomsSold}/${t.rooms} rooms sold (${occPctStr} occupancy). GOP today: ${eur(dayGOP)}.`,
+        dayGOP > 0 ? 'good' : 'bad');
+    els.kpiCashDelta.textContent = `${dayGOP >= 0 ? '+' : ''}${eur(dayGOP)} today`;
+
+    if (Math.random() < 0.5) {
+      const e = weightedEvent();
+      applyEvent(e);
+    }
+
+    state.day++;
+
+    if (state.cash < 0) {
+      log('The Continental has run out of cash. Doors close.', 'bad');
+      gameOver(true);
+      return;
+    }
+    render();
   }
 
   function weightedEvent() {
@@ -677,142 +666,109 @@
     return EVENTS[0];
   }
 
-  function render() {
-    const t = tier();
-    els.profit.textContent = fmt(state.profit);
-    els.profit.classList.toggle('warn', state.profit < 0);
-
-    const occ = state.occupied.length;
-    els.occupancy.textContent = `${occ}/${t.rooms}`;
-    els.occupancySub.textContent = occ === t.rooms ? 'fully booked' : `${t.rooms - occ} vacant`;
-
-    els.dailyCost.textContent = fmt(t.dailyCost);
-    els.tierName.textContent = t.name;
-    els.tierSub.textContent = `${fmt(t.rate)}/guest · ${t.rooms} rooms`;
-    els.checkInRate.textContent = '+' + fmt(t.rate);
-    els.upgradeCost.textContent = t.upgradeCost === null ? 'Max Tier' : fmt(t.upgradeCost);
-    els.dayBadge.textContent = `Day ${state.day}`;
-    els.reputation.textContent = 'Reputation: ' + '★'.repeat(Math.max(0,state.reputation)) + '☆'.repeat(Math.max(0, 5-state.reputation));
-
-    els.roomsGrid.innerHTML = '';
-    for (let i = 0; i < t.rooms; i++) {
-      const r = document.createElement('div');
-      r.className = 'room';
-      if (state.tier >= 2) r.classList.add('suite');
-      if (state.tier >= 3) r.classList.add('penthouse');
-      if (state.occupied.includes(i)) r.classList.add('occupied');
-      if (state.vipRooms.includes(i)) r.classList.add('vip');
-
-      const num = document.createElement('div');
-      num.className = 'num';
-      num.textContent = String(101 + i + state.tier * 100);
-      const lbl = document.createElement('div');
-      if (state.vipRooms.includes(i)) lbl.textContent = 'VIP';
-      else if (state.occupied.includes(i)) lbl.textContent = 'GUEST';
-      else lbl.textContent = 'VACANT';
-      r.appendChild(num); r.appendChild(lbl);
-      els.roomsGrid.appendChild(r);
+  function applyEvent(e) {
+    const eff = e.effect || {};
+    if (eff.cash) {
+      state.cash += eff.cash;
+      if (eff.cash < 0) state.totalOtherCost += -eff.cash;
     }
-
-    els.btnCheckIn.disabled = state.occupied.length >= t.rooms || state.gameOver;
-    els.btnUpgrade.disabled = t.upgradeCost === null || state.profit < t.upgradeCost || state.gameOver;
-    els.btnAdvertise.disabled = state.profit < 200 || state.adActive || state.gameOver;
-    els.btnCheckOut.disabled = state.gameOver;
-    els.btnRetire.disabled = state.gameOver;
-  }
-
-  function checkIn() {
-    const t = tier();
-    if (state.occupied.length >= t.rooms) return;
-    const empty = [];
-    for (let i = 0; i < t.rooms; i++) if (!state.occupied.includes(i)) empty.push(i);
-    const room = empty[Math.floor(Math.random() * empty.length)];
-    state.occupied.push(room);
-
-    const vipChance = t.vipChance + (state.adActive ? 0.2 : 0);
-    let earnings = t.rate;
-    if (Math.random() < vipChance) {
-      state.vipRooms.push(room);
-      earnings = Math.round(t.rate * 2.5);
-      state.vipServed++;
-      log(`★ VIP guest in suite ${101 + room + state.tier*100} (+${fmt(earnings)})`, 'vip');
-      toast('A VIP has arrived.');
-    } else {
-      log(`Guest checked in to ${101 + room + state.tier*100} (+${fmt(earnings)})`, 'good');
+    if (eff.reputation) {
+      state.reputation = Math.max(1, Math.min(5, state.reputation + eff.reputation));
     }
-    state.profit += earnings;
-    state.totalGuests++;
-    els.profitDelta.textContent = `+${fmt(earnings)} this booking`;
-    render();
-  }
-
-  function endDay() {
-    if (state.gameOver) return;
-    const t = tier();
-    state.profit -= t.dailyCost;
-    log(`End of day — operating costs ${fmt(t.dailyCost)}`);
-
-    if (state.occupied.length > 0) {
-      log(`${state.occupied.length} guests checked out.`);
+    if (eff.commissionUp) {
+      state.commissionRate += eff.commissionUp;
     }
-    state.occupied = [];
-    state.vipRooms = [];
-    state.adActive = false;
-
-    if (Math.random() < 0.6) {
-      const e = weightedEvent();
-      state.profit += e.delta;
-      const sign = e.delta > 0 ? '+' : (e.delta < 0 ? '-' : '±');
-      const absAmt = fmt(Math.abs(e.delta));
-      log(`${e.msg} (${sign}${absAmt})`, e.type);
-      if (e.delta < 0) state.reputation = Math.max(1, state.reputation - (Math.random() < 0.3 ? 1 : 0));
-      if (e.delta > 300) state.reputation = Math.min(5, state.reputation + (Math.random() < 0.4 ? 1 : 0));
+    if (eff.demand || eff.fbBonus) {
+      state.activeBoosts.push({
+        demand: eff.demand || 0,
+        fbBonus: eff.fbBonus || 0,
+        days: eff.days || 1,
+      });
     }
-
-    state.day++;
-    state.daysPlayed++;
-    els.profitDelta.textContent = `Day ${state.day} begins`;
-
-    if (state.profit < 0) {
-      log('You have run out of money. The Continental closes its doors.', 'bad');
-      gameOver(true);
-      return;
-    }
-    render();
+    log(e.msg, e.type, e.edu);
   }
 
   function upgrade() {
     const t = tier();
-    if (t.upgradeCost === null || state.profit < t.upgradeCost) return;
-    state.profit -= t.upgradeCost;
+    if (t.upgradeCost === null || state.cash < t.upgradeCost) return;
+    state.cash -= t.upgradeCost;
+    state.totalOtherCost += t.upgradeCost;
     state.tier++;
     state.reputation = Math.min(5, state.reputation + 1);
-    log(`★ Hotel renovated — now ${tier().name}.`, 'vip');
-    toast(`Welcome to the ${tier().name} era.`);
+    const newT = tier();
+    log(`Renovated. Now operating as ${newT.name} (${newT.rooms} rooms).`, 'vip',
+        'Tier upgrades represent CapEx — big upfront investment for bigger future revenue capacity. Time them when cash flow supports it.');
+    toast(`Reborn as ${newT.name}.`);
+    els.priceSlider.value = newT.adrRef;
     render();
   }
 
   function advertise() {
-    if (state.profit < 200 || state.adActive) return;
-    state.profit -= 200;
-    state.adActive = true;
-    log('Advertising campaign launched — VIPs more likely today.', 'good');
+    if (state.cash < 1200) return;
+    state.cash -= 1200;
+    state.totalOtherCost += 1200;
+    state.activeBoosts.push({ demand: 0.15, fbBonus: 0, days: 2 });
+    log('Marketing campaign launched. Demand boosted for 2 days.', 'good',
+        'Paid acquisition has measurable lift but is costly. Track ROAS (return on ad spend) — typical benchmark: 3:1.');
     render();
   }
 
   function gameOver(bankrupt = false) {
     state.gameOver = true;
-    els.endTitle.textContent = bankrupt ? 'The Doors Close' : 'A Distinguished Tenure';
-    els.endSubtitle.textContent = bankrupt ? 'The coffers ran dry.' : 'You retire to your villa in Bellagio.';
-    els.finalScore.textContent = fmt(Math.max(0, state.profit));
-    els.endBreakdown.textContent =
-      `${state.daysPlayed} days · ${state.totalGuests} guests · ${state.vipServed} VIPs · ${tier().name} tier`;
-    els.endModal.classList.add('show');
-    setTimeout(() => els.playerName.focus(), 300);
-    render();
+    showReportCard(bankrupt);
   }
 
-  // ============ LEADERBOARD (Supabase) ============
+  function showReportCard(bankrupt) {
+    const totalRev = state.totalRoomsRevenue + state.totalFBRevenue;
+    const totalCosts = state.totalLaborCost + state.totalUtilCost + state.totalFBCost + state.totalOtherCost;
+    const gop = totalRev - totalCosts;
+    const gopMargin = totalRev > 0 ? gop / totalRev : 0;
+    const occ = state.totalRoomNights > 0 ? state.totalRoomsSold / state.totalRoomNights : 0;
+    const adr = state.totalRoomsSold > 0 ? state.totalRoomsRevenue / state.totalRoomsSold : 0;
+    const revpar = state.totalRoomNights > 0 ? state.totalRoomsRevenue / state.totalRoomNights : 0;
+
+    els.rcDays.textContent = state.daysOperated + ' days';
+    els.rcTier.textContent = tier().name;
+    els.rcRevRooms.textContent = eur(state.totalRoomsRevenue);
+    els.rcRevFB.textContent = eur(state.totalFBRevenue);
+    els.rcRevTotal.textContent = eur(totalRev);
+    els.rcCostLabor.textContent = eur(state.totalLaborCost);
+    els.rcCostUtil.textContent = eur(state.totalUtilCost);
+    els.rcCostFB.textContent = eur(state.totalFBCost);
+    els.rcCostOther.textContent = eur(state.totalOtherCost);
+    els.rcCostTotal.textContent = eur(totalCosts);
+    els.rcGop.textContent = eur(gop);
+    els.rcOcc.textContent = pct(occ, 1);
+    els.rcAdr.textContent = eur(adr);
+    els.rcRevpar.textContent = eur(revpar);
+    els.rcGopMargin.textContent = pct(gopMargin, 1);
+
+    const grade = computeGrade(gopMargin, occ, state.daysOperated, bankrupt);
+    els.rcGrade.textContent = grade.letter;
+    els.rcComment.textContent = grade.comment;
+
+    document.getElementById('endTitle').textContent = bankrupt ? 'The Doors Close' : 'Operating Report Card';
+    document.getElementById('endSubtitle').textContent = bankrupt ? 'The coffers ran dry.' : 'Your final P&L statement.';
+
+    els.endModal.classList.add('show');
+    setTimeout(() => els.playerName.focus(), 300);
+  }
+
+  function computeGrade(gopMargin, occ, days, bankrupt) {
+    if (bankrupt) return { letter: 'F', comment: 'Bankruptcy. Tighten cost discipline and revisit pricing strategy.' };
+    if (days < 5) return { letter: 'INC', comment: 'Too few operating days to grade properly. Try a longer tenure.' };
+    const gopScore = Math.max(0, Math.min(1, (gopMargin - 0.05) / 0.35));
+    const occScore = Math.max(0, Math.min(1, (occ - 0.30) / 0.55));
+    const composite = gopScore * 0.6 + occScore * 0.4;
+    if (composite >= 0.85) return { letter: 'A',  comment: 'Outstanding. Industry-leading performance.' };
+    if (composite >= 0.72) return { letter: 'A−', comment: 'Excellent. Above-benchmark margins and strong occupancy.' };
+    if (composite >= 0.60) return { letter: 'B+', comment: 'Solid. Healthy margins with room to push ADR or occupancy.' };
+    if (composite >= 0.48) return { letter: 'B',  comment: 'Respectable. Look for cost-side wins to widen the margin.' };
+    if (composite >= 0.36) return { letter: 'C+', comment: 'Average. Pricing or service quality may be holding you back.' };
+    if (composite >= 0.24) return { letter: 'C',  comment: 'Below benchmark. Revisit your revenue management strategy.' };
+    return { letter: 'D', comment: 'Underperforming. Costs too high or pricing and occupancy too low.' };
+  }
+
   async function loadLeaderboard() {
     els.leaderboard.innerHTML = '<li class="lb-empty">Loading the registry…</li>';
     try {
@@ -825,7 +781,7 @@
       renderLeaderboard(entries);
     } catch (err) {
       console.error('Leaderboard load error:', err);
-      els.leaderboard.innerHTML = '<li class="lb-empty">Registry temporarily unavailable.<br><small>Check connection and refresh.</small></li>';
+      els.leaderboard.innerHTML = '<li class="lb-empty">Registry temporarily unavailable.</li>';
     }
   }
 
@@ -842,9 +798,9 @@
         <span class="lb-rank">${i + 1}</span>
         <span>
           <div class="lb-name">${escapeHtml(e.name)}</div>
-          <div class="lb-meta">${escapeHtml(e.tier || 'Boutique')} · ${e.days || 1}d · ${e.vips || 0} VIPs</div>
+          <div class="lb-meta">${escapeHtml(e.tier || 'Boutique')} · ${e.days || 1}d · GOP ${eur(e.score)}</div>
         </span>
-        <span class="lb-score">${fmt(e.score)}</span>
+        <span class="lb-score">${eur(e.score)}</span>
       `;
       els.leaderboard.appendChild(li);
     });
@@ -861,37 +817,33 @@
     els.btnSubmit.disabled = true;
     els.btnSubmit.textContent = 'Submitting…';
 
+    const totalRev = state.totalRoomsRevenue + state.totalFBRevenue;
+    const totalCosts = state.totalLaborCost + state.totalUtilCost + state.totalFBCost + state.totalOtherCost;
+    const gop = Math.max(0, Math.round(totalRev - totalCosts));
+
     const entry = {
       name: name.slice(0, 24),
-      score: Math.max(0, state.profit),
+      score: gop,
       tier: tier().name,
-      days: state.daysPlayed,
-      vips: state.vipServed,
+      days: state.daysOperated,
+      vips: 0,
     };
 
     try {
-      const res = await fetch(
-        `${SUPABASE_URL}/rest/v1/scores`,
-        {
-          method: 'POST',
-          headers: { ...SUPABASE_HEADERS, 'Prefer': 'return=representation' },
-          body: JSON.stringify(entry),
-        }
-      );
-      if (!res.ok) {
-        const errText = await res.text();
-        throw new Error('HTTP ' + res.status + ' — ' + errText);
-      }
+      const res = await fetch(`${SUPABASE_URL}/rest/v1/scores`, {
+        method: 'POST',
+        headers: { ...SUPABASE_HEADERS, 'Prefer': 'return=representation' },
+        body: JSON.stringify(entry),
+      });
+      if (!res.ok) throw new Error('HTTP ' + res.status + ' — ' + await res.text());
       const inserted = await res.json();
       const myId = Array.isArray(inserted) && inserted[0] ? inserted[0].id : null;
 
-      // Reload top 10 with my entry highlighted
       const res2 = await fetch(
         `${SUPABASE_URL}/rest/v1/scores?select=*&order=score.desc&limit=10`,
         { headers: SUPABASE_HEADERS }
       );
-      const entries = await res2.json();
-      renderLeaderboard(entries, myId);
+      renderLeaderboard(await res2.json(), myId);
       toast('Signed in the registry.');
       els.endModal.classList.remove('show');
     } catch (err) {
@@ -905,19 +857,25 @@
 
   function restart() {
     state = {
-      profit: 1000, tier: 0, occupied: [], vipRooms: [],
-      day: 1, totalGuests: 0, vipServed: 0, daysPlayed: 1,
-      reputation: 3, adActive: false, gameOver: false,
+      cash: 10000, tier: 0, day: 1, gameOver: false, reputation: 3,
+      activeBoosts: [], commissionRate: 0.12,
+      daysOperated: 0,
+      totalRoomsRevenue: 0, totalFBRevenue: 0,
+      totalLaborCost: 0, totalUtilCost: 0, totalFBCost: 0, totalOtherCost: 0,
+      totalRoomsSold: 0, totalRoomNights: 0,
     };
+    lastDayResult = null;
     els.logBox.innerHTML = '';
     els.endModal.classList.remove('show');
     els.playerName.value = '';
-    log('A new tenure begins. Welcome to The Continental.', 'vip');
+    els.priceSlider.value = TIERS[0].adrRef;
+    log('A new tenure begins. Set your ADR and open for business.', 'vip',
+        'Revenue management starts with a pricing decision every single day. Watch demand respond.');
     render();
   }
 
-  els.btnCheckIn.addEventListener('click', checkIn);
-  els.btnCheckOut.addEventListener('click', endDay);
+  els.priceSlider.addEventListener('input', render);
+  els.btnRunDay.addEventListener('click', runDay);
   els.btnUpgrade.addEventListener('click', upgrade);
   els.btnAdvertise.addEventListener('click', advertise);
   els.btnRetire.addEventListener('click', () => gameOver(false));
@@ -926,7 +884,8 @@
   els.btnRefresh.addEventListener('click', loadLeaderboard);
   els.playerName.addEventListener('keydown', e => { if (e.key === 'Enter') submitScore(); });
 
-  log('A new tenure begins. Welcome to The Continental.', 'vip');
+  log('Welcome to The Continental. Your tenure as General Manager begins now.', 'vip',
+      'In hospitality you make a pricing decision every day. The slider above is your most important tool — find the point where ADR × Occupancy is highest.');
   render();
   loadLeaderboard();
 </script>
