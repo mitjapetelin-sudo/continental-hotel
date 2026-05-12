@@ -484,7 +484,7 @@
       <div class="grade-path" id="rcPath">— The Honest Path —</div>
     </div>
 
-    <input id="playerName" type="text" maxlength="24" placeholder="Sign the guestbook…" autocomplete="off" />
+    <input id="playerName" type="text" maxlength="24" placeholder="Your full name (first + last)" autocomplete="name" />
     <div class="submission-counter" id="submissionCounter">Submissions remaining today: 10</div>
     <div class="modal-actions">
       <button class="btn primary" id="btnSubmit">Submit to Registry</button>
@@ -1192,11 +1192,12 @@
     entries.forEach((e, i) => {
       const li = document.createElement('li');
       li.className = 'lb-row' + (e.id === highlightId ? ' me' : '');
+      const when = timeAgo(e.created_at);
       li.innerHTML = `
         <span class="lb-rank">${i + 1}</span>
         <span>
           <div class="lb-name">${escapeHtml(e.name)}</div>
-          <div class="lb-meta">${escapeHtml(e.tier || 'Boutique')} · ${e.days || 1}d · GOP ${eur(e.score)}</div>
+          <div class="lb-meta">${escapeHtml(e.tier || 'Boutique')} · ${e.days || 1}d${when ? ' · ' + when : ''}</div>
         </span>
         <span class="lb-score">${eur(e.score)}</span>
       `;
@@ -1206,6 +1207,23 @@
 
   function escapeHtml(s) {
     return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  }
+
+  function timeAgo(isoString) {
+    if (!isoString) return '';
+    const then = new Date(isoString).getTime();
+    if (isNaN(then)) return '';
+    const seconds = Math.floor((Date.now() - then) / 1000);
+    if (seconds < 60) return 'just now';
+    const minutes = Math.floor(seconds / 60);
+    if (minutes < 60) return minutes + 'm ago';
+    const hours = Math.floor(minutes / 60);
+    if (hours < 24) return hours + 'h ago';
+    const days = Math.floor(hours / 24);
+    if (days < 7) return days + 'd ago';
+    // Older — show actual date
+    const d = new Date(isoString);
+    return d.getDate() + '/' + (d.getMonth()+1);
   }
 
   // ============ ANTI-CHEAT: SUBMISSION RATE LIMITING ============
