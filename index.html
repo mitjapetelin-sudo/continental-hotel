@@ -407,6 +407,11 @@
       <p style="font-family:'Cormorant Garamond',serif; font-style:italic; font-size:12px; color:var(--paper-dim); margin-bottom:14px; text-align:center;">
         Ranked by Gross Operating Profit (GOP).
       </p>
+      <div id="personalBest" style="display:none; padding:10px 12px; margin-bottom:14px; border:1px solid var(--gold-deep); background:rgba(201,169,97,0.06); text-align:center;">
+        <div style="font-family:'JetBrains Mono',monospace; font-size:9px; letter-spacing:0.25em; text-transform:uppercase; color:var(--paper-dim); margin-bottom:4px;">Your Personal Best</div>
+        <div id="personalBestValue" style="font-family:'Cormorant Garamond',serif; font-size:20px; color:var(--gold-bright);">—</div>
+        <div id="personalBestMeta" style="font-family:'JetBrains Mono',monospace; font-size:9px; color:var(--paper-dim); letter-spacing:0.1em; margin-top:2px;"></div>
+      </div>
       <ol class="leaderboard" id="leaderboard">
         <li class="lb-empty">Loading the registry…</li>
       </ol>
@@ -484,7 +489,16 @@
       <div class="grade-path" id="rcPath">— The Honest Path —</div>
     </div>
 
-    <input id="playerName" type="text" maxlength="24" placeholder="Your full name (first + last)" autocomplete="name" />
+    <div id="nameSection">
+      <input id="playerName" type="text" maxlength="40" placeholder="Your full name (first + last)" autocomplete="name" />
+      <div id="lockedNameDisplay" style="display:none;">
+        <div style="font-family:'JetBrains Mono',monospace; font-size:9px; letter-spacing:0.3em; text-transform:uppercase; color:var(--paper-dim); text-align:center; margin-bottom:6px;">Playing As</div>
+        <div id="lockedNameValue" style="font-family:'Cormorant Garamond',serif; font-size:22px; color:var(--gold-bright); text-align:center; margin-bottom:6px;"></div>
+        <div style="text-align:center; margin-bottom:14px;">
+          <button id="btnChangeName" style="background:none; border:none; font-family:'JetBrains Mono',monospace; font-size:9px; letter-spacing:0.2em; text-transform:uppercase; color:var(--gold); cursor:pointer; text-decoration:underline;">Change name</button>
+        </div>
+      </div>
+    </div>
     <div class="submission-counter" id="submissionCounter">Submissions remaining today: 10</div>
     <div class="modal-actions">
       <button class="btn primary" id="btnSubmit">Submit to Registry</button>
@@ -677,6 +691,12 @@
     rcRevpar: $('rcRevpar'), rcGopMargin: $('rcGopMargin'),
     rcGrade: $('rcGrade'), rcComment: $('rcComment'), rcPath: $('rcPath'),
     playerName: $('playerName'),
+    lockedNameDisplay: $('lockedNameDisplay'),
+    lockedNameValue: $('lockedNameValue'),
+    btnChangeName: $('btnChangeName'),
+    personalBest: $('personalBest'),
+    personalBestValue: $('personalBestValue'),
+    personalBestMeta: $('personalBestMeta'),
     btnSubmit: $('btnSubmit'), btnRestart: $('btnRestart'),
     btnRefresh: $('btnRefresh'),
     toast: $('toast'),
@@ -1251,9 +1271,76 @@
     if (remaining <= 0) els.btnSubmit.textContent = 'Daily limit reached';
   }
 
+  // ============ NAME PERSISTENCE ============
+  function getSavedName() {
+    try { return localStorage.getItem('continental_player_name') || ''; }
+    catch { return ''; }
+  }
+  function saveName(name) {
+    try { localStorage.setItem('continental_player_name', name); } catch {}
+  }
+  function clearSavedName() {
+    try { localStorage.removeItem('continental_player_name'); } catch {}
+  }
+  function applyNameUI() {
+    const saved = getSavedName();
+    if (saved) {
+      els.playerName.style.display = 'none';
+      els.lockedNameDisplay.style.display = 'block';
+      els.lockedNameValue.textContent = saved;
+    } else {
+      els.playerName.style.display = '';
+      els.lockedNameDisplay.style.display = 'none';
+      els.playerName.value = '';
+    }
+  }
+  function unlockName() {
+    clearSavedName();
+    applyNameUI();
+    setTimeout(() => els.playerName.focus(), 50);
+  }
+
+  // ============ PERSONAL BEST ============
+  function getPersonalBest() {
+    try {
+      const raw = localStorage.getItem('continental_personal_best');
+      return raw ? JSON.parse(raw) : null;
+    } catch { return null; }
+  }
+  function maybeUpdatePersonalBest(entry) {
+    const current = getPersonalBest();
+    if (!current || entry.score > current.score) {
+      try { localStorage.setItem('continental_personal_best', JSON.stringify(entry)); } catch {}
+      return true;
+    }
+    return false;
+  }
+  function renderPersonalBest() {
+    const best = getPersonalBest();
+    if (!best) {
+      els.personalBest.style.display = 'none';
+      return;
+    }
+    els.personalBest.style.display = '';
+    els.personalBestValue.textContent = eur(best.score);
+    els.personalBestMeta.textContent = `${best.tier || 'Boutique'} · ${best.days || 1} days`;
+  }
+
   async function submitScore() {
-    const name = els.playerName.value.trim();
-    if (!name) { toast('Please sign the guestbook.'); els.playerName.focus(); return; }
+    // Use locked name if set, otherwise from input
+    const savedName = getSavedName();
+    const name = (savedName || els.playerName.value).trim();
+    if (!name) {
+      toast('Please enter your full name.');
+      els.playerName.focus();
+      return;
+    }
+    // Basic validation: full name should have at least 2 characters and ideally a space
+    if (name.length < 2) {
+      toast('Please enter a valid name.');
+      els.playerName.focus();
+      return;
+    }
 
     // Anti-cheat: rate limit
     const now = Date.now();
@@ -1285,7 +1372,7 @@
     }
 
     const entry = {
-      name: name.slice(0, 24),
+      name: name.slice(0, 40),
       score: gop,
       tier: tier().name,
       days: state.daysOperated,
@@ -1305,6 +1392,13 @@
       const inserted = await res.json();
       const myId = Array.isArray(inserted) && inserted[0] ? inserted[0].id : null;
 
+      // Save the name for future games on this browser
+      saveName(entry.name);
+      // Update personal best if this score is higher
+      const wasNewBest = maybeUpdatePersonalBest(entry);
+      renderPersonalBest();
+      applyNameUI();
+
       lastSubmitTime = now;
       incrementSubmissions();
       updateSubmissionCounter();
@@ -1314,7 +1408,7 @@
         { headers: SUPABASE_HEADERS }
       );
       renderLeaderboard(await res2.json(), myId);
-      toast('Signed in the registry.');
+      toast(wasNewBest ? 'New personal best!' : 'Signed in the registry.');
       els.endModal.classList.remove('show');
     } catch (err) {
       console.error('Submit failed:', err);
@@ -1361,10 +1455,13 @@
   els.btnRestart.addEventListener('click', restart);
   els.btnRefresh.addEventListener('click', loadLeaderboard);
   els.playerName.addEventListener('keydown', e => { if (e.key === 'Enter') submitScore(); });
+  els.btnChangeName.addEventListener('click', unlockName);
 
   // ============ INIT ============
   log('Welcome to The Continental. Your tenure as General Manager begins now.', 'vip',
       'Watch two ledgers: Reputation rewards integrity and service. Notoriety rewards discretion. Both paths can be profitable; only one is sustainable.');
+  applyNameUI();
+  renderPersonalBest();
   render();
   loadLeaderboard();
 </script>
