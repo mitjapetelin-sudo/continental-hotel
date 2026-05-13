@@ -114,6 +114,19 @@
   .slider-bounds { display: flex; justify-content: space-between; font-family: 'JetBrains Mono', monospace; font-size: 9px; color: var(--paper-dim); margin-top: 4px; letter-spacing: 0.15em; }
   .demand-meter { margin-top: 12px; padding: 10px 12px; background: rgba(0,0,0,0.3); border: 1px dashed rgba(201,169,97,0.2); font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--paper-dim); letter-spacing: 0.1em; }
   .demand-meter strong { color: var(--gold-bright); font-weight: 500; }
+  .demand-modifiers {
+    margin-top: 6px;
+    padding-top: 6px;
+    border-top: 1px dotted rgba(201,169,97,0.15);
+    font-size: 9px;
+    letter-spacing: 0.08em;
+    line-height: 1.5;
+    color: var(--paper-faint);
+  }
+  .demand-modifiers:empty { display: none; }
+  .demand-modifiers .mod-good { color: var(--green-good); }
+  .demand-modifiers .mod-bad { color: #d68c7e; }
+  .demand-modifiers .mod-info { color: var(--gold); font-style: italic; text-transform: none; letter-spacing: 0; }
 
   /* Rooms */
   .rooms { display: grid; grid-template-columns: repeat(auto-fill, minmax(48px, 1fr)); gap: 5px; margin-top: 4px; }
@@ -269,6 +282,94 @@
 
   .help-hint { font-family: 'Cormorant Garamond', serif; font-style: italic; font-size: 12px; color: var(--paper-faint); text-align: center; margin-top: 8px; }
 
+  /* ============ MOBILE OPTIMIZATIONS ============ */
+  @media (max-width: 700px) {
+    body { padding: 12px 8px 48px; }
+    .frame { gap: 14px; }
+    .panel { padding: 14px 12px; margin-bottom: 12px; }
+    .masthead { padding: 16px 8px 10px; }
+    .brand { font-size: 38px; }
+    .brand .the { font-size: 0.3em; letter-spacing: 0.4em; }
+    .tagline { font-size: 12px; }
+    .edu-badge { font-size: 8px; padding: 3px 8px; }
+
+    /* KPIs: 2 columns on mobile instead of auto-fit 3 */
+    .kpi-grid { grid-template-columns: 1fr 1fr; gap: 10px; }
+    .kpi { padding: 4px 8px; }
+    .kpi-value { font-size: 22px; }
+    .kpi-label { font-size: 8px; letter-spacing: 0.18em; }
+    .kpi-sub { font-size: 8px; }
+
+    /* Larger touch-friendly slider */
+    input[type=range] { height: 8px; }
+    input[type=range]::-webkit-slider-thumb { width: 28px; height: 28px; }
+    input[type=range]::-moz-range-thumb { width: 28px; height: 28px; }
+    .pricing-value { font-size: 24px; }
+    .slider-bounds { font-size: 8px; }
+
+    /* Stack action buttons vertically — full width, easier to tap */
+    .actions { grid-template-columns: 1fr; gap: 8px; }
+    .btn { padding: 16px 10px; font-size: 10px; }
+    .btn .cost { font-size: 14px; }
+
+    /* Tighter rooms grid — more rooms per row on small screens */
+    .rooms { grid-template-columns: repeat(auto-fill, minmax(42px, 1fr)); gap: 4px; }
+    .room .num { font-size: 10px; }
+    .room { font-size: 8px; }
+
+    /* Reputation/notoriety meters side by side stay, but smaller */
+    .meters { gap: 8px; }
+    .meter { padding: 8px 10px; }
+    .meter-label { font-size: 8px; letter-spacing: 0.2em; }
+    .meter-value { font-size: 16px; }
+
+    /* How to Play — collapsed by default on mobile (handled via JS) */
+    .howto-summary { padding: 14px 14px; }
+    .howto-body { padding: 0 14px 14px; }
+    .howto-steps li { font-size: 12px; padding-left: 28px; }
+    .howto-steps li::before { width: 20px; height: 20px; font-size: 9px; }
+
+    /* Modals — full screen friendly */
+    .modal-bg { padding: 8px; }
+    .modal { padding: 24px 18px; }
+    .modal h2 { font-size: 24px; }
+    .modal .subtitle { font-size: 13px; }
+    .modal .final-score { font-size: 36px; }
+    .grade-letter { font-size: 44px; }
+    .pnl { padding: 12px; font-size: 10px; }
+    .pnl-kpis { grid-template-columns: 1fr; }
+
+    /* Day badge spacing */
+    .day-badge { font-size: 8px; letter-spacing: 0.2em; padding: 2px 6px; }
+    .panel-title { font-size: 9px; letter-spacing: 0.2em; }
+
+    /* Cost breakdown lines wrap nicely */
+    .cost-row { grid-template-columns: 1fr auto; }
+    .cost-row .pct { display: none; }
+
+    /* Leaderboard sidebar becomes regular panel position, smaller text */
+    aside .panel { position: relative; top: auto; }
+    .lb-name { font-size: 14px; }
+    .lb-rank { font-size: 18px; }
+
+    /* Dilemma modal — make sure choices are big enough to tap */
+    .modal.dilemma .modal-actions { grid-template-columns: 1fr; }
+
+    /* Log */
+    .log { max-height: 160px; font-size: 10px; }
+    .log-entry .edu { font-size: 9px; }
+
+    /* Tooltips don't work on touch — show key info inline as needed */
+    .kpi-label[data-tip]:hover::after { display: none; }
+  }
+
+  @media (max-width: 420px) {
+    /* Very small phones: single-column KPIs */
+    .kpi-grid { grid-template-columns: 1fr; }
+    .brand { font-size: 32px; }
+    .modal-actions { grid-template-columns: 1fr; }
+  }
+
   /* How-to-play panel */
   .howto-panel { padding: 0; }
   .howto-summary {
@@ -362,7 +463,7 @@
 
   <section>
 
-    <details class="panel howto-panel" id="howtoPanel" open>
+    <details class="panel howto-panel" id="howtoPanel">
       <summary class="howto-summary">
         <span class="howto-label">How to Play</span>
         <span class="howto-toggle">▾</span>
@@ -460,6 +561,7 @@
       </div>
       <div class="demand-meter">
         At this price, expect roughly <strong id="demandForecast">5</strong> of <strong id="demandCap">8</strong> rooms sold today.
+        <div class="demand-modifiers" id="demandModifiers"></div>
       </div>
     </div>
 
@@ -791,6 +893,7 @@
     priceSlider: $('priceSlider'), priceValue: $('priceValue'),
     priceMin: $('priceMin'), priceMax: $('priceMax'),
     demandForecast: $('demandForecast'), demandCap: $('demandCap'),
+    demandModifiers: $('demandModifiers'),
     btnRunDay: $('btnRunDay'),
     btnUpgrade: $('btnUpgrade'), upgradeCost: $('upgradeCost'),
     btnAdvertise: $('btnAdvertise'),
@@ -854,21 +957,31 @@
     while (els.logBox.children.length > 40) els.logBox.removeChild(els.logBox.lastChild);
   }
 
-  function expectedOccupancyFraction(adr) {
+  function demandBreakdown(adr) {
     const t = tier();
     const span = t.adrMax - t.adrMin;
     // Normalized price position: -0.5 at min, 0 at reference, ~+0.5 at max
     const offset = (adr - t.adrRef) / span;
-    // Stronger elasticity so the slider visibly matters at every tier (including Legendary's wide span)
-    // At full minimum price: base demand ≈ 0.95; at maximum: ≈ 0.20
-    let demand = 0.60 - offset * 1.5;
-    // Reputation/notoriety as additive modifiers (not multipliers) so they can't flatten the curve
-    demand += (state.reputation - 3) * 0.06;   // ★1=-0.12, ★3=0, ★5=+0.12
-    demand -= state.notoriety * 0.025;
-    // Active boosts (events, marketing)
-    state.activeBoosts.forEach(b => { if (b.demand) demand += b.demand; });
-    // Slightly looser bounds so price changes are always visible
-    return Math.max(0.03, Math.min(0.95, demand));
+    // Base demand purely from price. Steep elasticity.
+    // At minimum price: base ≈ 1.35 (will be clamped — guarantees full house at deep discount)
+    // At reference: 0.65
+    // At maximum: ≈ -0.05 (will be clamped to ~3%)
+    const priceBase = 0.65 - offset * 1.6;
+    // Reputation modifier (additive, ±18% range)
+    const repMod = (state.reputation - 3) * 0.06;
+    // Notoriety drag
+    const notMod = -state.notoriety * 0.025;
+    // Active event boosts
+    let boostMod = 0;
+    state.activeBoosts.forEach(b => { if (b.demand) boostMod += b.demand; });
+    const raw = priceBase + repMod + notMod + boostMod;
+    // Clamp to feasible range. 1.0 means "full hotel" (every room sold) — discounts can guarantee this.
+    const clamped = Math.max(0.03, Math.min(1.0, raw));
+    return { priceBase, repMod, notMod, boostMod, raw, clamped };
+  }
+
+  function expectedOccupancyFraction(adr) {
+    return demandBreakdown(adr).clamped;
   }
 
   function fbRevenueFactor() {
@@ -906,10 +1019,29 @@
     els.priceMin.textContent = `${eur(t.adrMin)} (full house)`;
     els.priceMax.textContent = `${eur(t.adrMax)} (premium)`;
 
-    const expectedFrac = expectedOccupancyFraction(currentPrice);
+    const breakdown = demandBreakdown(currentPrice);
+    const expectedFrac = breakdown.clamped;
     const expectedRooms = Math.round(expectedFrac * t.rooms);
     els.demandForecast.textContent = expectedRooms;
     els.demandCap.textContent = t.rooms;
+
+    // Show demand modifiers transparently
+    const mods = [];
+    if (breakdown.repMod !== 0) {
+      const sign = breakdown.repMod > 0 ? '+' : '';
+      mods.push(`<span class="${breakdown.repMod > 0 ? 'mod-good' : 'mod-bad'}">${sign}${Math.round(breakdown.repMod*100)}% reputation</span>`);
+    }
+    if (breakdown.notMod < 0) {
+      mods.push(`<span class="mod-bad">${Math.round(breakdown.notMod*100)}% notoriety</span>`);
+    }
+    if (breakdown.boostMod !== 0) {
+      const sign = breakdown.boostMod > 0 ? '+' : '';
+      mods.push(`<span class="${breakdown.boostMod > 0 ? 'mod-good' : 'mod-bad'}">${sign}${Math.round(breakdown.boostMod*100)}% events</span>`);
+    }
+    if (breakdown.raw > 1.0) {
+      mods.push(`<span class="mod-info">capped at full house — deeper discount won't help</span>`);
+    }
+    els.demandModifiers.innerHTML = mods.length > 0 ? mods.join(' · ') : '';
 
     els.kpiCash.textContent = eur(state.cash);
     els.kpiCash.classList.toggle('warn', state.cash < 0);
@@ -1016,7 +1148,11 @@
 
     // Calculate occupancy
     const occFrac = expectedOccupancyFraction(adr);
-    const noise = (Math.random() - 0.5) * 0.08;
+    // Small random noise — biased to avoid spoiling a deep discount's "full house" promise.
+    // If forecast is ≥0.97 (essentially full), no negative noise. Otherwise ±0.05.
+    const noise = occFrac >= 0.97
+      ? Math.random() * 0.03           // only positive (or zero) wiggle
+      : (Math.random() - 0.5) * 0.10;  // ±5%
     const actualFrac = Math.max(0.02, Math.min(1.0, occFrac + noise));
     const roomsSold = Math.round(actualFrac * t.rooms);
     const roomsRev = roomsSold * adr;
@@ -1091,8 +1227,8 @@
     }
 
     // Roll for black swan disaster (rare, only after Day 5)
-    // ~3% per day → ~1-in-3 chance over a 30-day game
-    if (state.daysOperated >= 5 && Math.random() < 0.03) {
+    // ~5% per day → ~70% chance of at least one disaster over a 30-day game
+    if (state.daysOperated >= 5 && Math.random() < 0.05) {
       const disaster = DISASTERS[Math.floor(Math.random() * DISASTERS.length)];
       applyDisaster(disaster);
     }
@@ -1649,6 +1785,12 @@
   els.btnChangeName.addEventListener('click', unlockName);
 
   // ============ INIT ============
+  // Open the How-to-Play panel by default on wider screens (desktop / tablet);
+  // keep it collapsed on phones to save scroll real estate.
+  if (window.matchMedia('(min-width: 700px)').matches) {
+    document.getElementById('howtoPanel').open = true;
+  }
+
   log('Welcome to The Continental. You have 30 days as General Manager. Make them count.', 'vip',
       'Watch two ledgers: Reputation rewards integrity and service. Notoriety rewards discretion. Both paths can be profitable; only one is sustainable.');
   applyNameUI();
