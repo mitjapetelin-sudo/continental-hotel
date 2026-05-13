@@ -301,6 +301,51 @@
 
   .help-hint { font-family: 'Cormorant Garamond', serif; font-style: italic; font-size: 12px; color: var(--paper-faint); text-align: center; margin-top: 8px; }
 
+  /* Site footer credit */
+  .site-footer {
+    max-width: 1200px;
+    margin: 40px auto 0;
+    padding: 28px 16px 12px;
+    text-align: center;
+    position: relative;
+  }
+  .footer-divider {
+    color: var(--gold);
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 24px;
+    letter-spacing: 1em;
+    margin-bottom: 14px;
+    opacity: 0.6;
+  }
+  .footer-credit {
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    font-size: 15px;
+    color: var(--paper-dim);
+    margin-bottom: 8px;
+    letter-spacing: 0.02em;
+  }
+  .footer-credit strong {
+    color: var(--gold-bright);
+    font-weight: 600;
+    font-style: normal;
+  }
+  .footer-copyright {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--paper-faint);
+    margin-bottom: 6px;
+  }
+  .footer-context {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--gold-deep);
+  }
+
   /* ============ MOBILE OPTIMIZATIONS ============ */
   @media (max-width: 700px) {
     body { padding: 12px 8px 48px; }
@@ -640,6 +685,19 @@
   </aside>
 
 </div>
+
+<footer class="site-footer">
+  <div class="footer-divider">·</div>
+  <p class="footer-credit">
+    Designed, built, and launched by <strong>Mr. Mitja Petelin</strong>
+  </p>
+  <p class="footer-copyright">
+    © <span id="footerYear">2026</span> Mitja Petelin · All rights reserved
+  </p>
+  <p class="footer-context">
+    Created for the FH Conference 2026 · VSGT Maribor
+  </p>
+</footer>
 
 <!-- Discreet guest dilemma modal -->
 <div class="modal-bg" id="dilemmaModal">
@@ -1804,6 +1862,9 @@
   els.btnChangeName.addEventListener('click', unlockName);
 
   // ============ INIT ============
+  // Auto-update copyright year in footer
+  document.getElementById('footerYear').textContent = new Date().getFullYear();
+
   // Open the How-to-Play panel by default on wider screens (desktop / tablet);
   // keep it collapsed on phones to save scroll real estate.
   if (window.matchMedia('(min-width: 700px)').matches) {
