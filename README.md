@@ -1,2 +1,962 @@
-# continental-hotel
-A hotel management browser game
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>The Continental — Hotel Management</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --ink: #0a0908;
+    --paper: #f4ead5;
+    --paper-dim: #d8c9a3;
+    --gold: #c9a961;
+    --gold-bright: #e8c878;
+    --gold-deep: #8a6f2f;
+    --burgundy: #5c1a1b;
+    --moss: #3a4a2c;
+    --red-alert: #b03a2e;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body {
+    background: var(--ink);
+    color: var(--paper);
+    font-family: 'Inter', sans-serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+  body {
+    background-image:
+      radial-gradient(ellipse at top, rgba(201,169,97,0.08) 0%, transparent 60%),
+      radial-gradient(ellipse at bottom, rgba(92,26,27,0.12) 0%, transparent 60%),
+      url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200'%3E%3Cfilter id='n'%3E%3CfeTurbulence baseFrequency='0.9' numOctaves='2'/%3E%3CfeColorMatrix values='0 0 0 0 0.79 0 0 0 0 0.66 0 0 0 0 0.38 0 0 0 0.04 0'/%3E%3C/filter%3E%3Crect width='200' height='200' filter='url(%23n)'/%3E%3C/svg%3E");
+    padding: 32px 16px 64px;
+  }
+
+  .frame {
+    max-width: 1100px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 24px;
+  }
+  @media (min-width: 900px) {
+    .frame { grid-template-columns: 1.3fr 1fr; align-items: start; }
+    .masthead { grid-column: 1 / -1; }
+  }
+
+  /* Masthead */
+  .masthead {
+    text-align: center;
+    padding: 24px 16px 8px;
+    border-top: 1px solid var(--gold-deep);
+    border-bottom: 1px solid var(--gold-deep);
+    position: relative;
+  }
+  .masthead::before, .masthead::after {
+    content: '';
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 60px;
+    height: 1px;
+    background: var(--gold);
+  }
+  .masthead::before { top: 6px; }
+  .masthead::after { bottom: 6px; }
+  .est {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.4em;
+    color: var(--gold);
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+  .brand {
+    font-family: 'Cormorant Garamond', serif;
+    font-weight: 500;
+    font-size: clamp(40px, 6vw, 64px);
+    line-height: 0.95;
+    letter-spacing: 0.02em;
+    color: var(--paper);
+  }
+  .brand .the {
+    display: block;
+    font-style: italic;
+    font-size: 0.35em;
+    letter-spacing: 0.5em;
+    color: var(--gold);
+    margin-bottom: 4px;
+  }
+  .tagline {
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    font-size: 14px;
+    color: var(--paper-dim);
+    margin-top: 8px;
+  }
+
+  /* Panels */
+  .panel {
+    background: linear-gradient(180deg, rgba(244,234,213,0.04) 0%, rgba(244,234,213,0.01) 100%);
+    border: 1px solid rgba(201,169,97,0.25);
+    padding: 20px;
+    position: relative;
+  }
+  .panel-title {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 14px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .panel-title::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: linear-gradient(90deg, var(--gold-deep), transparent);
+    margin-left: 12px;
+  }
+
+  /* Ledger */
+  .ledger {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 14px 20px;
+  }
+  .stat {
+    border-left: 2px solid var(--gold-deep);
+    padding-left: 12px;
+  }
+  .stat-label {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 0.25em;
+    text-transform: uppercase;
+    color: var(--paper-dim);
+    margin-bottom: 4px;
+  }
+  .stat-value {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 28px;
+    font-weight: 500;
+    color: var(--paper);
+    line-height: 1;
+  }
+  .stat-value.money { color: var(--gold-bright); }
+  .stat-value.warn { color: var(--red-alert); }
+  .stat-sub {
+    font-size: 11px;
+    color: var(--paper-dim);
+    margin-top: 4px;
+  }
+
+  /* Rooms grid */
+  .rooms {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(70px, 1fr));
+    gap: 8px;
+    margin-top: 8px;
+  }
+  .room {
+    aspect-ratio: 1;
+    border: 1px solid var(--gold-deep);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    color: var(--paper-dim);
+    position: relative;
+    transition: all 0.3s;
+    cursor: default;
+  }
+  .room .num { font-size: 14px; color: var(--gold); margin-bottom: 2px; }
+  .room.occupied {
+    background: linear-gradient(135deg, var(--burgundy) 0%, rgba(92,26,27,0.4) 100%);
+    border-color: var(--burgundy);
+    color: var(--paper);
+  }
+  .room.occupied .num { color: var(--gold-bright); }
+  .room.vip {
+    background: linear-gradient(135deg, var(--gold-deep) 0%, var(--gold) 100%);
+    border-color: var(--gold-bright);
+    color: var(--ink);
+  }
+  .room.vip .num { color: var(--ink); }
+  .room.suite { border-color: var(--gold-bright); border-width: 2px; }
+  .room.penthouse {
+    border-color: var(--gold-bright);
+    border-width: 2px;
+    box-shadow: inset 0 0 12px rgba(201,169,97,0.3);
+  }
+
+  /* Actions */
+  .actions {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-top: 16px;
+  }
+  .btn {
+    background: transparent;
+    border: 1px solid var(--gold-deep);
+    color: var(--paper);
+    padding: 14px 12px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: all 0.2s;
+    position: relative;
+    overflow: hidden;
+  }
+  .btn:hover:not(:disabled) {
+    background: var(--gold);
+    color: var(--ink);
+    border-color: var(--gold);
+  }
+  .btn:disabled {
+    opacity: 0.35;
+    cursor: not-allowed;
+  }
+  .btn .cost {
+    display: block;
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 16px;
+    font-style: italic;
+    letter-spacing: 0;
+    text-transform: none;
+    color: var(--gold-bright);
+    margin-top: 4px;
+  }
+  .btn:hover:not(:disabled) .cost { color: var(--burgundy); }
+  .btn.primary {
+    background: var(--gold);
+    color: var(--ink);
+    border-color: var(--gold);
+  }
+  .btn.primary:hover:not(:disabled) {
+    background: var(--gold-bright);
+    border-color: var(--gold-bright);
+  }
+  .btn.primary .cost { color: var(--burgundy); }
+  .btn.danger:hover:not(:disabled) {
+    background: var(--burgundy);
+    border-color: var(--burgundy);
+    color: var(--paper);
+  }
+  .btn.full-width { grid-column: 1 / -1; }
+
+  /* Log */
+  .log {
+    max-height: 180px;
+    overflow-y: auto;
+    border: 1px solid rgba(201,169,97,0.15);
+    background: rgba(0,0,0,0.3);
+    padding: 12px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    line-height: 1.6;
+  }
+  .log-entry {
+    color: var(--paper-dim);
+    padding: 2px 0;
+    border-bottom: 1px dashed rgba(201,169,97,0.08);
+  }
+  .log-entry:last-child { border-bottom: none; }
+  .log-entry .time {
+    color: var(--gold);
+    margin-right: 8px;
+  }
+  .log-entry.good { color: #a8c98a; }
+  .log-entry.bad { color: #d68c7e; }
+  .log-entry.vip { color: var(--gold-bright); font-weight: 500; }
+
+  /* Leaderboard */
+  .leaderboard {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+  .lb-row {
+    display: grid;
+    grid-template-columns: 32px 1fr auto;
+    gap: 12px;
+    align-items: baseline;
+    padding: 10px 8px;
+    border-bottom: 1px dotted rgba(201,169,97,0.2);
+  }
+  .lb-row:last-child { border-bottom: none; }
+  .lb-rank {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 22px;
+    font-style: italic;
+    color: var(--gold);
+    text-align: center;
+  }
+  .lb-row:nth-child(1) .lb-rank { color: var(--gold-bright); font-size: 26px; }
+  .lb-row.me { background: rgba(201,169,97,0.08); }
+  .lb-name {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 18px;
+    color: var(--paper);
+  }
+  .lb-meta {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px;
+    color: var(--paper-dim);
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+  }
+  .lb-score {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 14px;
+    color: var(--gold-bright);
+    font-weight: 500;
+  }
+  .lb-empty {
+    text-align: center;
+    padding: 24px;
+    color: var(--paper-dim);
+    font-style: italic;
+    font-family: 'Cormorant Garamond', serif;
+  }
+
+  /* End screen modal */
+  .modal-bg {
+    position: fixed;
+    inset: 0;
+    background: rgba(10,9,8,0.92);
+    backdrop-filter: blur(8px);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 100;
+    padding: 20px;
+  }
+  .modal-bg.show { display: flex; }
+  .modal {
+    background: var(--ink);
+    border: 1px solid var(--gold);
+    padding: 40px 32px;
+    max-width: 460px;
+    width: 100%;
+    text-align: center;
+    position: relative;
+  }
+  .modal::before {
+    content: '';
+    position: absolute;
+    inset: 6px;
+    border: 1px solid var(--gold-deep);
+    pointer-events: none;
+  }
+  .modal h2 {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 32px;
+    font-weight: 500;
+    color: var(--gold-bright);
+    margin-bottom: 8px;
+  }
+  .modal .subtitle {
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    color: var(--paper-dim);
+    margin-bottom: 20px;
+  }
+  .modal .final-score {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 48px;
+    color: var(--gold-bright);
+    margin: 16px 0;
+  }
+  .modal .breakdown {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--paper-dim);
+    margin-bottom: 20px;
+    line-height: 1.8;
+  }
+  .modal input {
+    width: 100%;
+    background: transparent;
+    border: none;
+    border-bottom: 1px solid var(--gold-deep);
+    color: var(--paper);
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 20px;
+    text-align: center;
+    padding: 8px;
+    margin-bottom: 16px;
+    outline: none;
+    transition: border-color 0.2s;
+  }
+  .modal input:focus { border-color: var(--gold-bright); }
+  .modal input::placeholder { color: rgba(244,234,213,0.3); font-style: italic; }
+  .modal-actions {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+  }
+
+  /* Floating toast */
+  .toast {
+    position: fixed;
+    bottom: 24px;
+    left: 50%;
+    transform: translateX(-50%) translateY(100px);
+    background: var(--ink);
+    border: 1px solid var(--gold);
+    padding: 12px 24px;
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    color: var(--gold-bright);
+    transition: transform 0.4s cubic-bezier(0.2, 0.9, 0.3, 1.2);
+    z-index: 50;
+    pointer-events: none;
+  }
+  .toast.show { transform: translateX(-50%) translateY(0); }
+
+  /* Day counter */
+  .day-badge {
+    display: inline-block;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 0.3em;
+    color: var(--gold);
+    padding: 2px 8px;
+    border: 1px solid var(--gold-deep);
+    margin-left: 8px;
+    text-transform: uppercase;
+  }
+
+  /* Tier labels */
+  .tier-row {
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px;
+    color: var(--paper-dim);
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    margin-top: 10px;
+    padding-top: 10px;
+    border-top: 1px dashed rgba(201,169,97,0.15);
+  }
+  .tier-dot {
+    display: inline-block;
+    width: 8px;
+    height: 8px;
+    margin-right: 6px;
+    vertical-align: middle;
+  }
+  .dot-std { background: transparent; border: 1px solid var(--gold-deep); }
+  .dot-occ { background: var(--burgundy); }
+  .dot-vip { background: var(--gold-bright); }
+
+  /* Scrollbar */
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--gold-deep); }
+
+  .refresh-link {
+    background: none;
+    border: none;
+    color: var(--gold);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    cursor: pointer;
+    padding: 2px 6px;
+  }
+  .refresh-link:hover { color: var(--gold-bright); }
+</style>
+</head>
+<body>
+<div class="frame">
+
+  <header class="masthead">
+    <div class="est">Established · MMXXVI</div>
+    <h1 class="brand"><span class="the">The</span>Continental</h1>
+    <p class="tagline">— Discretion. Distinction. Decadence. —</p>
+  </header>
+
+  <!-- LEFT: Game -->
+  <section>
+    <div class="panel" style="margin-bottom:20px;">
+      <div class="panel-title">
+        <span>Daily Ledger <span class="day-badge" id="dayBadge">Day 1</span></span>
+        <span id="reputation" style="font-family:'Cormorant Garamond',serif; font-style:italic; font-size:14px; color:var(--paper-dim); letter-spacing:0; text-transform:none;">Reputation: ★★★</span>
+      </div>
+      <div class="ledger">
+        <div class="stat">
+          <div class="stat-label">Coffers</div>
+          <div class="stat-value money" id="profit">$1,000</div>
+          <div class="stat-sub" id="profitDelta">— starting capital</div>
+        </div>
+        <div class="stat">
+          <div class="stat-label">Occupancy</div>
+          <div class="stat-value" id="occupancy">0/3</div>
+          <div class="stat-sub" id="occupancySub">3 rooms available</div>
+        </div>
+        <div class="stat">
+          <div class="stat-label">Daily Costs</div>
+          <div class="stat-value warn" id="dailyCost">$50</div>
+          <div class="stat-sub">staff · upkeep · utilities</div>
+        </div>
+        <div class="stat">
+          <div class="stat-label">Hotel Tier</div>
+          <div class="stat-value" id="tierName" style="font-family:'Cormorant Garamond',serif; font-style:italic;">Boutique</div>
+          <div class="stat-sub" id="tierSub">$100/guest · 3 rooms</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="panel" style="margin-bottom:20px;">
+      <div class="panel-title">Floor Plan</div>
+      <div class="rooms" id="roomsGrid"></div>
+      <div class="tier-row">
+        <span><span class="tier-dot dot-std"></span>Vacant</span>
+        <span><span class="tier-dot dot-occ"></span>Occupied</span>
+        <span><span class="tier-dot dot-vip"></span>VIP Guest</span>
+      </div>
+    </div>
+
+    <div class="panel">
+      <div class="panel-title">Management</div>
+      <div class="actions">
+        <button class="btn primary" id="btnCheckIn">
+          Check In Guest
+          <span class="cost" id="checkInRate">+$100</span>
+        </button>
+        <button class="btn" id="btnCheckOut">
+          End Day / Check Out
+          <span class="cost">collect & reset</span>
+        </button>
+        <button class="btn" id="btnUpgrade">
+          Upgrade Hotel
+          <span class="cost" id="upgradeCost">$800</span>
+        </button>
+        <button class="btn" id="btnAdvertise">
+          Run Advertising
+          <span class="cost">$200 · attract VIP</span>
+        </button>
+        <button class="btn danger full-width" id="btnRetire">Retire & Submit Score</button>
+      </div>
+    </div>
+
+    <div class="panel" style="margin-top:20px;">
+      <div class="panel-title">Concierge Log</div>
+      <div class="log" id="logBox"></div>
+    </div>
+  </section>
+
+  <!-- RIGHT: Leaderboard -->
+  <aside>
+    <div class="panel" style="position:sticky; top:20px;">
+      <div class="panel-title">
+        <span>Hall of Proprietors</span>
+        <button class="refresh-link" id="btnRefresh">↻ Refresh</button>
+      </div>
+      <p style="font-family:'Cormorant Garamond',serif; font-style:italic; font-size:13px; color:var(--paper-dim); margin-bottom:14px; text-align:center;">
+        The finest hoteliers from across the realm
+      </p>
+      <ol class="leaderboard" id="leaderboard">
+        <li class="lb-empty">Loading the registry…</li>
+      </ol>
+      <p style="font-family:'JetBrains Mono',monospace; font-size:9px; color:var(--paper-dim); letter-spacing:0.2em; text-transform:uppercase; text-align:center; margin-top:14px; padding-top:12px; border-top:1px dashed rgba(201,169,97,0.15);">
+        Shared with all guests of The Continental
+      </p>
+    </div>
+  </aside>
+
+</div>
+
+<!-- End modal -->
+<div class="modal-bg" id="endModal">
+  <div class="modal">
+    <h2 id="endTitle">A Most Distinguished Tenure</h2>
+    <p class="subtitle" id="endSubtitle">Your time at The Continental concludes.</p>
+    <div class="final-score" id="finalScore">$0</div>
+    <div class="breakdown" id="endBreakdown"></div>
+    <input id="playerName" type="text" maxlength="24" placeholder="Sign the guestbook…" autocomplete="off" />
+    <div class="modal-actions">
+      <button class="btn primary" id="btnSubmit">Submit to Registry</button>
+      <button class="btn" id="btnRestart">Begin Anew</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+  // ============ GAME STATE ============
+  const TIERS = [
+    { name: 'Boutique',    rate: 100,  rooms: 3, upgradeCost: 800,   dailyCost: 50,  vipChance: 0.10 },
+    { name: 'Refined',     rate: 175,  rooms: 5, upgradeCost: 2000,  dailyCost: 150, vipChance: 0.18 },
+    { name: 'Distinguished', rate: 300, rooms: 7, upgradeCost: 5000,  dailyCost: 350, vipChance: 0.25 },
+    { name: 'Grand',       rate: 500,  rooms: 9, upgradeCost: 12000, dailyCost: 750, vipChance: 0.35 },
+    { name: 'Legendary',   rate: 850,  rooms: 12, upgradeCost: null, dailyCost: 1500, vipChance: 0.45 }
+  ];
+
+  const EVENTS = [
+    { msg: 'A celebrity guest writes a glowing review.',  delta: 400, type: 'good', weight: 3 },
+    { msg: 'Plumbing emergency on the upper floor.',       delta: -300, type: 'bad', weight: 2 },
+    { msg: 'A diplomat reserves the entire suite block.',  delta: 600, type: 'good', weight: 2 },
+    { msg: 'Health inspector visits — passed with grace.', delta: 0, type: 'good', weight: 1 },
+    { msg: 'Staff requested overdue raises.',              delta: -250, type: 'bad', weight: 2 },
+    { msg: 'Vintage wine cellar discovered.',              delta: 500, type: 'good', weight: 1 },
+    { msg: 'Power outage. Refunds issued.',                delta: -400, type: 'bad', weight: 1 },
+    { msg: 'Featured in a travel publication.',            delta: 350, type: 'good', weight: 2 },
+  ];
+
+  let state = {
+    profit: 1000,
+    tier: 0,
+    occupied: [],     // array of room indexes
+    vipRooms: [],     // array of room indexes that are VIP
+    day: 1,
+    totalGuests: 0,
+    vipServed: 0,
+    daysPlayed: 1,
+    reputation: 3,
+    adActive: false,
+    gameOver: false,
+  };
+
+  // ============ DOM ============
+  const $ = id => document.getElementById(id);
+  const els = {
+    profit: $('profit'), profitDelta: $('profitDelta'),
+    occupancy: $('occupancy'), occupancySub: $('occupancySub'),
+    dailyCost: $('dailyCost'),
+    tierName: $('tierName'), tierSub: $('tierSub'),
+    roomsGrid: $('roomsGrid'),
+    checkInRate: $('checkInRate'),
+    upgradeCost: $('upgradeCost'),
+    btnCheckIn: $('btnCheckIn'),
+    btnCheckOut: $('btnCheckOut'),
+    btnUpgrade: $('btnUpgrade'),
+    btnAdvertise: $('btnAdvertise'),
+    btnRetire: $('btnRetire'),
+    logBox: $('logBox'),
+    leaderboard: $('leaderboard'),
+    dayBadge: $('dayBadge'),
+    reputation: $('reputation'),
+    endModal: $('endModal'),
+    endTitle: $('endTitle'),
+    endSubtitle: $('endSubtitle'),
+    finalScore: $('finalScore'),
+    endBreakdown: $('endBreakdown'),
+    playerName: $('playerName'),
+    btnSubmit: $('btnSubmit'),
+    btnRestart: $('btnRestart'),
+    btnRefresh: $('btnRefresh'),
+    toast: $('toast'),
+  };
+
+  // ============ HELPERS ============
+  const fmt = n => '$' + n.toLocaleString('en-US');
+  const tier = () => TIERS[state.tier];
+
+  function toast(msg) {
+    els.toast.textContent = msg;
+    els.toast.classList.add('show');
+    clearTimeout(toast._t);
+    toast._t = setTimeout(() => els.toast.classList.remove('show'), 2200);
+  }
+
+  function log(msg, kind = '') {
+    const li = document.createElement('div');
+    li.className = 'log-entry ' + kind;
+    li.innerHTML = `<span class="time">Day ${state.day}</span>${msg}`;
+    els.logBox.prepend(li);
+    while (els.logBox.children.length > 40) els.logBox.removeChild(els.logBox.lastChild);
+  }
+
+  function weightedEvent() {
+    const total = EVENTS.reduce((s, e) => s + e.weight, 0);
+    let r = Math.random() * total;
+    for (const e of EVENTS) { r -= e.weight; if (r <= 0) return e; }
+    return EVENTS[0];
+  }
+
+  // ============ RENDER ============
+  function render() {
+    const t = tier();
+    els.profit.textContent = fmt(state.profit);
+    els.profit.classList.toggle('warn', state.profit < 0);
+
+    const occ = state.occupied.length;
+    els.occupancy.textContent = `${occ}/${t.rooms}`;
+    els.occupancySub.textContent = occ === t.rooms ? 'fully booked' : `${t.rooms - occ} vacant`;
+
+    els.dailyCost.textContent = fmt(t.dailyCost);
+    els.tierName.textContent = t.name;
+    els.tierSub.textContent = `${fmt(t.rate)}/guest · ${t.rooms} rooms`;
+    els.checkInRate.textContent = '+' + fmt(t.rate);
+    els.upgradeCost.textContent = t.upgradeCost === null ? 'Max Tier' : fmt(t.upgradeCost);
+    els.dayBadge.textContent = `Day ${state.day}`;
+    els.reputation.textContent = 'Reputation: ' + '★'.repeat(Math.max(0,state.reputation)) + '☆'.repeat(Math.max(0, 5-state.reputation));
+
+    // Rooms grid
+    els.roomsGrid.innerHTML = '';
+    for (let i = 0; i < t.rooms; i++) {
+      const r = document.createElement('div');
+      r.className = 'room';
+      if (state.tier >= 2) r.classList.add('suite');
+      if (state.tier >= 3) r.classList.add('penthouse');
+      if (state.occupied.includes(i)) r.classList.add('occupied');
+      if (state.vipRooms.includes(i)) r.classList.add('vip');
+
+      const num = document.createElement('div');
+      num.className = 'num';
+      num.textContent = String(101 + i + state.tier * 100);
+      const lbl = document.createElement('div');
+      if (state.vipRooms.includes(i)) lbl.textContent = 'VIP';
+      else if (state.occupied.includes(i)) lbl.textContent = 'GUEST';
+      else lbl.textContent = 'VACANT';
+      r.appendChild(num); r.appendChild(lbl);
+      els.roomsGrid.appendChild(r);
+    }
+
+    // Buttons
+    els.btnCheckIn.disabled = state.occupied.length >= t.rooms || state.gameOver;
+    els.btnUpgrade.disabled = t.upgradeCost === null || state.profit < t.upgradeCost || state.gameOver;
+    els.btnAdvertise.disabled = state.profit < 200 || state.adActive || state.gameOver;
+    els.btnCheckOut.disabled = state.gameOver;
+    els.btnRetire.disabled = state.gameOver;
+  }
+
+  // ============ ACTIONS ============
+  function checkIn() {
+    const t = tier();
+    if (state.occupied.length >= t.rooms) return;
+    // pick a random empty room
+    const empty = [];
+    for (let i = 0; i < t.rooms; i++) if (!state.occupied.includes(i)) empty.push(i);
+    const room = empty[Math.floor(Math.random() * empty.length)];
+    state.occupied.push(room);
+
+    // VIP chance (boosted if advertising)
+    const vipChance = t.vipChance + (state.adActive ? 0.2 : 0);
+    let earnings = t.rate;
+    if (Math.random() < vipChance) {
+      state.vipRooms.push(room);
+      earnings = Math.round(t.rate * 2.5);
+      state.vipServed++;
+      log(`★ VIP guest in suite ${101 + room + state.tier*100} (+${fmt(earnings)})`, 'vip');
+      toast('A VIP has arrived.');
+    } else {
+      log(`Guest checked in to ${101 + room + state.tier*100} (+${fmt(earnings)})`, 'good');
+    }
+    state.profit += earnings;
+    state.totalGuests++;
+    els.profitDelta.textContent = `+${fmt(earnings)} this booking`;
+    render();
+  }
+
+  function endDay() {
+    if (state.gameOver) return;
+    const t = tier();
+    // Daily cost
+    state.profit -= t.dailyCost;
+    log(`End of day — operating costs ${fmt(t.dailyCost)}`, state.adActive ? '' : '');
+
+    // Check out everyone
+    if (state.occupied.length > 0) {
+      log(`${state.occupied.length} guests checked out.`);
+    }
+    state.occupied = [];
+    state.vipRooms = [];
+    state.adActive = false;
+
+    // Random event (every day, 60% chance)
+    if (Math.random() < 0.6) {
+      const e = weightedEvent();
+      state.profit += e.delta;
+      const sign = e.delta > 0 ? '+' : (e.delta < 0 ? '' : '±');
+      log(`${e.msg} (${sign}${fmt(e.delta).replace('$-','-$').replace('$','$').replace('-$-','-$')})`, e.type);
+      if (e.delta < 0) state.reputation = Math.max(1, state.reputation - (Math.random() < 0.3 ? 1 : 0));
+      if (e.delta > 300) state.reputation = Math.min(5, state.reputation + (Math.random() < 0.4 ? 1 : 0));
+    }
+
+    state.day++;
+    state.daysPlayed++;
+    els.profitDelta.textContent = `Day ${state.day} begins`;
+
+    // Bankruptcy check
+    if (state.profit < 0) {
+      log('You have run out of money. The Continental closes its doors.', 'bad');
+      gameOver(true);
+      return;
+    }
+    render();
+  }
+
+  function upgrade() {
+    const t = tier();
+    if (t.upgradeCost === null || state.profit < t.upgradeCost) return;
+    state.profit -= t.upgradeCost;
+    state.tier++;
+    state.reputation = Math.min(5, state.reputation + 1);
+    log(`★ Hotel renovated — now ${tier().name}.`, 'vip');
+    toast(`Welcome to the ${tier().name} era.`);
+    render();
+  }
+
+  function advertise() {
+    if (state.profit < 200 || state.adActive) return;
+    state.profit -= 200;
+    state.adActive = true;
+    log('Advertising campaign launched — VIPs more likely today.', 'good');
+    render();
+  }
+
+  function gameOver(bankrupt = false) {
+    state.gameOver = true;
+    els.endTitle.textContent = bankrupt ? 'The Doors Close' : 'A Distinguished Tenure';
+    els.endSubtitle.textContent = bankrupt ? 'The coffers ran dry.' : 'You retire to your villa in Bellagio.';
+    els.finalScore.textContent = fmt(Math.max(0, state.profit));
+    els.endBreakdown.textContent =
+      `${state.daysPlayed} days · ${state.totalGuests} guests · ${state.vipServed} VIPs · ${tier().name} tier`;
+    els.endModal.classList.add('show');
+    setTimeout(() => els.playerName.focus(), 300);
+    render();
+  }
+
+  // ============ LEADERBOARD (shared) ============
+  const LB_KEY = 'continental_leaderboard_v1';
+
+  async function loadLeaderboard() {
+    els.leaderboard.innerHTML = '<li class="lb-empty">Loading the registry…</li>';
+    try {
+      // Try shared storage first
+      let entries = [];
+      try {
+        const result = await window.storage.get(LB_KEY, true);
+        if (result && result.value) {
+          entries = JSON.parse(result.value);
+        }
+      } catch (e) {
+        // key doesn't exist yet — fine
+      }
+      renderLeaderboard(entries);
+    } catch (err) {
+      console.error('LB load error', err);
+      els.leaderboard.innerHTML = '<li class="lb-empty">Registry unavailable.<br><small>Scores will save locally.</small></li>';
+    }
+  }
+
+  function renderLeaderboard(entries) {
+    if (!entries || entries.length === 0) {
+      els.leaderboard.innerHTML = '<li class="lb-empty">No proprietors yet.<br><small>Be the first to sign the registry.</small></li>';
+      return;
+    }
+    entries.sort((a, b) => b.score - a.score);
+    const top = entries.slice(0, 10);
+    els.leaderboard.innerHTML = '';
+    top.forEach((e, i) => {
+      const li = document.createElement('li');
+      li.className = 'lb-row' + (e._me ? ' me' : '');
+      li.innerHTML = `
+        <span class="lb-rank">${i + 1}</span>
+        <span>
+          <div class="lb-name">${escapeHtml(e.name)}</div>
+          <div class="lb-meta">${e.tier || 'Boutique'} · ${e.days || 1}d · ${e.vips || 0} VIPs</div>
+        </span>
+        <span class="lb-score">${fmt(e.score)}</span>
+      `;
+      els.leaderboard.appendChild(li);
+    });
+  }
+
+  function escapeHtml(s) {
+    return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  }
+
+  async function submitScore() {
+    const name = els.playerName.value.trim();
+    if (!name) { toast('Please sign the guestbook.'); els.playerName.focus(); return; }
+    const entry = {
+      name: name.slice(0, 24),
+      score: Math.max(0, state.profit),
+      tier: tier().name,
+      days: state.daysPlayed,
+      vips: state.vipServed,
+      ts: Date.now(),
+    };
+    els.btnSubmit.disabled = true;
+    els.btnSubmit.textContent = 'Submitting…';
+    try {
+      let entries = [];
+      try {
+        const result = await window.storage.get(LB_KEY, true);
+        if (result && result.value) entries = JSON.parse(result.value);
+      } catch (e) { /* first writer */ }
+
+      entries.push(entry);
+      // keep top 50 globally to stay under size limits
+      entries.sort((a, b) => b.score - a.score);
+      entries = entries.slice(0, 50);
+
+      await window.storage.set(LB_KEY, JSON.stringify(entries), true);
+      // mark "me" for this render
+      const marked = entries.map(e =>
+        e.ts === entry.ts && e.name === entry.name ? {...e, _me: true} : e
+      );
+      renderLeaderboard(marked);
+      toast('Signed in the registry.');
+      els.endModal.classList.remove('show');
+    } catch (err) {
+      console.error('Submit failed', err);
+      toast('Could not save — try again.');
+    } finally {
+      els.btnSubmit.disabled = false;
+      els.btnSubmit.textContent = 'Submit to Registry';
+    }
+  }
+
+  function restart() {
+    state = {
+      profit: 1000, tier: 0, occupied: [], vipRooms: [],
+      day: 1, totalGuests: 0, vipServed: 0, daysPlayed: 1,
+      reputation: 3, adActive: false, gameOver: false,
+    };
+    els.logBox.innerHTML = '';
+    els.endModal.classList.remove('show');
+    els.playerName.value = '';
+    log('A new tenure begins. Welcome to The Continental.', 'vip');
+    render();
+  }
+
+  // ============ EVENTS ============
+  els.btnCheckIn.addEventListener('click', checkIn);
+  els.btnCheckOut.addEventListener('click', endDay);
+  els.btnUpgrade.addEventListener('click', upgrade);
+  els.btnAdvertise.addEventListener('click', advertise);
+  els.btnRetire.addEventListener('click', () => gameOver(false));
+  els.btnSubmit.addEventListener('click', submitScore);
+  els.btnRestart.addEventListener('click', restart);
+  els.btnRefresh.addEventListener('click', loadLeaderboard);
+  els.playerName.addEventListener('keydown', e => { if (e.key === 'Enter') submitScore(); });
+
+  // ============ INIT ============
+  log('A new tenure begins. Welcome to The Continental.', 'vip');
+  render();
+  loadLeaderboard();
+</script>
+</body>
+</html>
