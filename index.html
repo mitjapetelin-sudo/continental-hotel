@@ -107,13 +107,32 @@
   .pricing-row { display: flex; align-items: center; justify-content: space-between; gap: 14px; margin-bottom: 6px; }
   .pricing-label { font-family: 'JetBrains Mono', monospace; font-size: 10px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--paper-dim); }
   .pricing-value { font-family: 'Cormorant Garamond', serif; font-size: 28px; font-weight: 500; color: var(--gold-bright); }
-  .slider-wrap { margin: 14px 0 8px; position: relative; }
+  .slider-wrap { margin: 16px 0 8px; padding: 8px 0; position: relative; }
   input[type=range] { -webkit-appearance: none; appearance: none; width: 100%; height: 4px; background: linear-gradient(90deg, var(--gold-deep), var(--gold), var(--burgundy)); outline: none; border-radius: 0; }
   input[type=range]::-webkit-slider-thumb { -webkit-appearance: none; appearance: none; width: 20px; height: 20px; background: var(--gold-bright); border: 2px solid var(--ink); cursor: pointer; box-shadow: 0 0 0 1px var(--gold); }
   input[type=range]::-moz-range-thumb { width: 20px; height: 20px; background: var(--gold-bright); border: 2px solid var(--ink); cursor: pointer; box-shadow: 0 0 0 1px var(--gold); }
   .slider-bounds { display: flex; justify-content: space-between; font-family: 'JetBrains Mono', monospace; font-size: 9px; color: var(--paper-dim); margin-top: 4px; letter-spacing: 0.15em; }
-  .demand-meter { margin-top: 12px; padding: 10px 12px; background: rgba(0,0,0,0.3); border: 1px dashed rgba(201,169,97,0.2); font-family: 'JetBrains Mono', monospace; font-size: 10px; color: var(--paper-dim); letter-spacing: 0.1em; }
-  .demand-meter strong { color: var(--gold-bright); font-weight: 500; }
+  .demand-meter {
+    margin: 10px 0 4px;
+    padding: 12px 14px;
+    background: rgba(201,169,97,0.06);
+    border: 1px solid rgba(201,169,97,0.3);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    color: var(--paper-dim);
+    letter-spacing: 0.08em;
+    text-align: center;
+    line-height: 1.5;
+  }
+  .demand-meter strong {
+    color: var(--gold-bright);
+    font-weight: 600;
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 22px;
+    font-style: italic;
+    margin: 0 2px;
+    vertical-align: -2px;
+  }
   .demand-modifiers {
     margin-top: 6px;
     padding-top: 6px;
@@ -552,16 +571,16 @@
         <span class="pricing-label">Today's ADR</span>
         <span class="pricing-value" id="priceValue">€100</span>
       </div>
+      <div class="demand-meter">
+        At this price, expect roughly <strong id="demandForecast">5</strong> of <strong id="demandCap">8</strong> rooms sold today.
+        <div class="demand-modifiers" id="demandModifiers"></div>
+      </div>
       <div class="slider-wrap">
         <input type="range" id="priceSlider" min="60" max="140" step="5" value="100" />
         <div class="slider-bounds">
           <span id="priceMin">€60 (full house)</span>
           <span id="priceMax">€140 (premium)</span>
         </div>
-      </div>
-      <div class="demand-meter">
-        At this price, expect roughly <strong id="demandForecast">5</strong> of <strong id="demandCap">8</strong> rooms sold today.
-        <div class="demand-modifiers" id="demandModifiers"></div>
       </div>
     </div>
 
